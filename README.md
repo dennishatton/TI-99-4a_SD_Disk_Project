@@ -16,4 +16,4 @@ I'm also including some PC utilties written in Visual C
 I've already added 32k inside my console so I didn't put 32k on this board.
 You can find instructions on internet to add 32k inside console.
 
-
+![20210211_083814-ConvertImage](https://user-images.githubusercontent.com/6753466/107653626-736e0500-6c47-11eb-956a-0ce666fc9371.jpg)
