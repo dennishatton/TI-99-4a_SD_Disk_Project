@@ -14,6 +14,9 @@ I'm using an ATMEGA162 to interface with the TI. Source included for MPLABX
 The volumes are sector images of disk.
 You can use Disk Manager 2 on TI or on PC use TI99DIR.
 I'm also including some PC utilties.
+To use the PC utilities, You will need Visual C++ Redistributable for Visual Studio 2019.
+Go here to download for your computer.
+https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads
 There is a cartridge TISDMGRC.bin to list volumes on the TI.
 The cartridge is optional, You will need FLASHROM99 to run it.
 I've already added 32k inside my console so I didn't put 32k on this board.
