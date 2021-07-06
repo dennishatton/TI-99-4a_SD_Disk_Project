@@ -3,9 +3,8 @@ Allows TI to use floppy images on SD card
 
 I built this on a wire wrap board and tested.<br />
 I've included the KICAD schematic but no PCB.<br />
-You can use any size SD card, Just format it EXFAT cluster size 512mb.<br />
-The reason I use 512mb clusters is make sure another file can't be save between volumes.<br />
-You could use FAT32, but I recommend EXFAT for the above reason<br />
+You must format SD card to EXFAT allocation unit size 512k.<br />
+The reason I use 512k clusters is make sure another file can't be save between volumes.<br />
 You will need to find a TI DSR rom. I'm not including one.<br />
 You can use TI DSR rom as is or apply patches for CALL MOUNT and 360k disk images<br />
 I'm using an ATMEGA162 to interface with the TI. Source included for MPLABX<br />
