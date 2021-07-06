@@ -1,0 +1,15 @@
+--------------------------------------------------------------------------------
+Setup new SD card
+Format SD card EXFAT with allocation unit size 512k. (Must be EXFAT with AU 512k)
+Make folder name VOLUMES
+Run CreateVolumes.exe to create TIVOL000.vol - TIVOL255.vol
+Copy all TIVOLxxx.vol to VOLUMES folder on SD
+--------------------------------------------------------
+You can format a volumes
+with TI Disk Manager 2
+Use 80 track, double side, single density
+or 
+with DM1000
+Use 40 track, double side, double density
+
+You can use 90k, 180k, or 360k

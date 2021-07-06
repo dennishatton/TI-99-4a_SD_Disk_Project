@@ -1,0 +1,23 @@
+403A 0000		change to 5F52		;CALL MOUNT patch
+
+411A 02D0 (720) 	change to 5A0 (1440)	;40 track to 80 track patch
+4120 0168 (360)		change to 2D0 (720)
+4126 FD31 (-719) 	change to FA61 (-1439)
+
+Open PATCHED_ROM 40 track.bin with Hxd
+Change
+	 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+00000030 .. .. .. .. .. .. .. .. .. .. 5F 52 .. .. .. ..
+
+00000110 .. .. .. .. .. .. .. .. .. .. 05 A0 .. .. .. ..
+00000120 02 D0 .. .. .. .. FA 61 .. .. .. .. .. .. .. ..
+
+Save As PATCHED_ROM 80 track.bin
+
+Run BIN2INTL64.exe
+Enter
+	PATCHED_ROM_80_track.bin
+	PATCHED_ROM_80_track.hex
+	0000
+
+Burn hex file to DSR rom

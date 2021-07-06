@@ -1,0 +1,162 @@
+Asm994a TMS99000 Assembler - v3.010
+
+                * Asm994a Generated Register Equates
+                *
+      0000 0000 R0      EQU     0 
+      0000 0001 R1      EQU     1 
+      0000 0002 R2      EQU     2 
+      0000 0003 R3      EQU     3 
+      0000 0004 R4      EQU     4 
+      0000 0005 R5      EQU     5 
+      0000 0006 R6      EQU     6 
+      0000 0007 R7      EQU     7 
+      0000 0008 R8      EQU     8 
+      0000 0009 R9      EQU     9 
+      0000 000A R10     EQU     10
+      0000 000B R11     EQU     11
+      0000 000C R12     EQU     12
+      0000 000D R13     EQU     13
+      0000 000E R14     EQU     14
+      0000 000F R15     EQU     15
+                *
+   1                   AORG >403A  ;Address of FILES link (0000)
+   2  403A 5F52        DATA MNTLNK ;Change link to MOUNT
+   3            
+   4                   AORG >5F52  ;Last free address in rom
+   5  5F52 0000 MNTLNK DATA >0000  ;Indicate last subprogram
+   6  5F54 5F62        DATA MOUNT  ;MOUNT entry
+   7  5F56 05          BYTE NAM2-NAM
+   8  5F57 4D4F NAM    TEXT 'MOUNT'
+   8  5F59 554E  
+   8  5F5B 54    
+   9            NAM2
+  10            *---------------------------------------
+  11            * DSR Subprogram MOUNT
+  12            *---------------------------------------
+  13  0000 4909 HB6    EQU >4909
+  14  0000 4E3F H7E    EQU >4E3F
+  15            *N10   EQU >40EA  ;Needs to be even address
+  16            *N100  EQU >5AF6  ; "
+  17            
+  18  5F5C 0001 MPYTBL DATA 1
+  19  5F5E 000A        DATA 10
+  20  5F60 0064        DATA 100
+  21            
+  22  5F62 C1CB MOUNT MOV  R11,R7
+  23  5F64 06A0        BL   @>4724             ;Prepare disk operation
+  23  5F66 4724  
+  24  5F68 C229        MOV  @>002C(R9),R8      ;Pointer to next token
+  24  5F6A 002C  
+  25  5F6C 0228        AI   R8,>0007           ;skip "MOUNT"
+  25  5F6E 0007  
+  26            
+  27            *Get >C8 unquoted string & String len = 1
+  28  5F70 06A0        BL   @>4B76             ;Return token and string len in R0
+  28  5F72 4B76  
+  29  5F74 0280        CI   R0,>C801           ;>C8 unquoted string & String len 1
+  29  5F76 C801  
+  30  5F78 1638        JNE  ERROR              ;Not >C801 then error
+  31            
+  32            *Get Drive# & comma (>B3)
+  33  5F7A 05C8        INCT R8                 ;Increment pointer
+  34  5F7C 06A0        BL   @>4B76             ;Drive# & comma (>B3)
+  34  5F7E 4B76  
+  35  5F80 06C0        SWPB R0                 ;Swap Drive# to lower byte
+  36  5F82 0220        AI   R0,>4CD0           ;subtract >B3 comma & ASCII bias >30
+  36  5F84 4CD0  
+  37  5F86 1331        JEQ ERROR               ;If DSK0
+  38  5F88 0280        CI   R0,>0003           ;
+  38  5F8A 0003  
+  39  5F8C 1B2E        JH ERROR                ;If DSK4
+  40  5F8E C180        MOV R0,R6               ;Save Drive number in lower byte R6
+  41            
+  42            *Get >C8 unquoted string & String len
+  43  5F90 05C8        INCT R8                 ;Increment pointer
+  44  5F92 06A0        BL   @>4B76             ;>C8 unquoted string & String len
+  44  5F94 4B76  
+  45  5F96 0220        AI   R0,>3800           ;Check MSByte >C8 unquoted string
+  45  5F98 3800  
+  46  5F9A 0280        CI   R0,>0003           ;Check String length 1-3 (0 not possible)
+  46  5F9C 0003  
+  47  5F9E 1B25        JH ERROR                ;
+  48  5FA0 C0C0        MOV R0,R3               ;Save string length
+  49            
+  50            *Get disk# ASCII string in R4 & R5
+  51  5FA2 05C8        INCT R8                 ;increment pointer
+  52  5FA4 06A0        BL   @>4B76             ;get disk ASCII string
+  52  5FA6 4B76  
+  53  5FA8 C100        MOV R0,R4               ;1st 2 bytes of string in R4
+  54  5FAA 05C8        INCT R8                 ;Increment pointer
+  55  5FAC 06A0        BL   @>4B76             ;Last byte of string in R5
+  55  5FAE 4B76  
+  56  5FB0 C140        MOV R0,R5               ;
+  57            
+  58  5FB2 9823        CB @>83E8(R3),@HB6      ;Check >B6 closed parenthesis
+  58  5FB4 83E8  
+  58  5FB6 4909  
+  59  5FB8 1618        JNE ERROR               ;
+  60            
+  61            *Convert disk# ASCII string to value in upper byte R6
+  62  5FBA 0202        LI R2,MPYTBL
+  62  5FBC 5F5C  
+  63            LP00
+  64  5FBE D023        MOVB @>83E7(R3),R0
+  64  5FC0 83E7  
+  65  5FC2 0A40        SLA R0,4                 ;Shift out ASCII bias
+  66  5FC4 09C0        SRL R0,12                ;Move to lower byte
+  67  5FC6 3832        MPY *R2+,R0
+  68  5FC8 06C1        SWPB R1
+  69  5FCA B181        AB R1,R6                 ;Build disk # in upper byte, Lower byte contains drive #
+  70  5FCC 180E        JOC ERROR                ;Disk greater than 255
+  71  5FCE 0603        DEC R3                   ;Is string complete
+  72  5FD0 16F6        JNE LP00                 ; "
+  73            
+  74  5FD2 D820        MOVB @H7E,@>5FF8         ;Send command >81 inverted
+  74  5FD4 4E3F  
+  74  5FD6 5FF8  
+  75  5FD8 0546        INV R6
+  76  5FDA 06C6        SWPB R6
+  77  5FDC D806        MOVB R6,@>5FFE           ;Send Drive number
+  77  5FDE 5FFE  
+  78  5FE0 06C6        SWPB R6
+  79  5FE2 D806        MOVB R6,@>5FFE           ;Send Disk number
+  79  5FE4 5FFE  
+  80            
+  81  5FE6 0460        B    @>5D98              ;return to caller
+  81  5FE8 5D98  
+  82  5FEA 0460 ERROR  B    @>4676              ;return to caller with error
+  82  5FEC 4676  
+  83  5FEE 0000        END
+  83            
+
+
+ Assembly Complete - Errors: 0,  Warnings: 0
+
+
+ ------ Symbol Listing ------
+
+ ERROR  ABS:5FEA ERROR
+ H7E    ABS:4E3F H7E
+ HB6    ABS:4909 HB6
+ LP00   ABS:5FBE LP00
+ MNTLNK ABS:5F52 MNTLNK
+ MOUNT  ABS:5F62 MOUNT
+ MPYTBL ABS:5F5C MPYTBL
+ NAM    ABS:5F57 NAM
+ NAM2   ABS:5F5C NAM2
+ R0     ABS:0000 R0
+ R1     ABS:0001 R1
+ R10    ABS:000A R10
+ R11    ABS:000B R11
+ R12    ABS:000C R12
+ R13    ABS:000D R13
+ R14    ABS:000E R14
+ R15    ABS:000F R15
+ R2     ABS:0002 R2
+ R3     ABS:0003 R3
+ R4     ABS:0004 R4
+ R5     ABS:0005 R5
+ R6     ABS:0006 R6
+ R7     ABS:0007 R7
+ R8     ABS:0008 R8
+ R9     ABS:0009 R9

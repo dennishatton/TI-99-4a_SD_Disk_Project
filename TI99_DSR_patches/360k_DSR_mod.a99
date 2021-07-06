@@ -1,0 +1,9 @@
+*360k mod for disk DSR ROM
+	AORG >4118
+
+	CI   1,1440	;max 720 (DS/SD) 	Change from 720 to 1440 
+	JHE  >41B6	;error 7
+	CI   1,720	;on which side? 	Change from 360 to 720 
+	JL   >413E	;0-359: on side 0	 "	"	"
+	AI   1,-1439	;side 1			Change from -719 to -1439
+	END
