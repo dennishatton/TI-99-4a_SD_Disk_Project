@@ -1,4 +1,4 @@
-# TI-99-4a_SD_Disk_Project
+# TI-99-4a SD Disk Project
 Allows TI to use floppy images on SD card
 
 I built this on a wire wrap board and tested.<br />
