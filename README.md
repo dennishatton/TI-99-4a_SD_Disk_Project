@@ -28,7 +28,7 @@ with fuses FF D9 FF<br />
 I have moved the Atmega project from MPLABX to Microchip Studio.<br />
 Also allowed the TI to access the ATmega usart<br />
 by writing to the FDC Command register and reading or writing data registers.<br />
-0x81 read usart status, 0x82 read usart data, 0x83 write usart data.<br />
+0x83 read usart status, 0x84 read usart data, 0x85 write usart data.<br />
 There is a 128 byte buffer storing status & char received. (64 chars)<br />
 The baud is 115.2k 8N1. I may latter let TI change baud<br />
 
