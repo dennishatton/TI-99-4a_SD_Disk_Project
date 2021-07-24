@@ -20,6 +20,18 @@ I've already added 32k inside my console so I didn't put 32k on this board.<br /
 If someone does build this, Please let me know.<br />
 I have mine working for a couple years.<br />
 
+
+You must use a 16MHz Atmega162<br />
+Low High Extend<br />
+with fuses FF D9 FF<br />
+
+I have moved the Atmega project from MPLABX to Microchip Studio.<br />
+Also allowed the TI to access the ATmega usart<br />
+by writing to the FDC Command register and reading or writing data registers.<br />
+0x81 read usart status, 0x82 read usart data, 0x83 write usart data.<br />
+There is a 128 byte buffer storing status & char received. (64 chars)<br />
+The baud is 115.2k 8N1. I may latter let TI change baud<br />
+
 ![20210211_083814-ConvertImage](https://user-images.githubusercontent.com/6753466/107653626-736e0500-6c47-11eb-956a-0ce666fc9371.jpg)
 
 ![20210210_214707-ConvertImage](https://user-images.githubusercontent.com/6753466/107653811-a7492a80-6c47-11eb-9e17-8fb9d23c6c07.jpg)
