@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name TI-994A-SD_Drive-rescue)(type Legacy)(uri "${KIPRJMOD}/TI-994A SD_Drive-rescue.lib")(options "")(descr ""))
+)
