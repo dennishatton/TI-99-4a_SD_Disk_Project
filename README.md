@@ -14,7 +14,7 @@ I'm also including some PC utilties.<br />
 To use the PC utilities, You will need Visual C++ Redistributable for Visual Studio 2019.<br />
 Go here to download for your computer.<br />
 https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads<br />
-There is a cartridge TISDMGRC.bin to list volumes on the TI.<br />
+There is a cartridge VolumeMgr.bin to list volumes on the TI.<br />
 The cartridge is optional, You will need FLASHROM99 to run it.<br />
 I've already added 32k inside my console so I didn't put 32k on this board.<br />
 If someone does build this, Please let me know.<br />
