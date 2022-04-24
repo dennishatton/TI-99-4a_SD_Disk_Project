@@ -5,7 +5,8 @@ Note:	Added PCB layout and Gerber files.
 	This should go without saying but the edge card connector goes on bottom of the board, Not components side.
 	Also If you can't figure out where the emitter, base & collector is on a transistor. This project is not for you.
 	Must power up SD drive first then console.
-	
+	While a standard edge card connector will work, I recommend a wire wrap edge card connector.
+	The pins will stick out to allow addition of a 32k daughter board.
 
 I built this on a wire wrap board and tested.<br />
 I've included the KICAD schematic but no PCB.<br />
