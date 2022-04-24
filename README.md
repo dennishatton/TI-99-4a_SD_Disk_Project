@@ -2,6 +2,7 @@
 Allows TI to use floppy images on SD card
 
 Note:	Added PCB layout and Gerber files.
+	This should go without saying but the edge card connector goes on bottom of the board, Not components side.
 	Must power up SD drive first then console.
 
 I built this on a wire wrap board and tested.<br />
