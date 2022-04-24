@@ -1,11 +1,8 @@
 # TI-99/4a SD Disk Project
 Allows TI to use floppy images on SD card
 
-Note:	If using speech synthesizer, Will need to add external power supply.
-	Cut 5v trace at I/O bus and add 5v regulated wall wart power supply.
-	Also recommend adding 220uf capacitor.
-	Warning must be 5v regulated, not a 5v charger!
-  Must power up SD drive first then console.
+Note:	Added PCB layout and Gerber files.
+	Must power up SD drive first then console.
 
 I built this on a wire wrap board and tested.<br />
 I've included the KICAD schematic but no PCB.<br />
