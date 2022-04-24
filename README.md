@@ -4,10 +4,10 @@ Allows TI to use floppy images on SD card
 Note:	Added PCB layout and Gerber files.<br />
 	This should go without saying but the edge card connector goes on bottom of the board, Not components side.
 	Also If you can't figure out where the emitter, base & collector is on a transistor. This project is not for you.<br />
-	Must power up SD drive first then console.<br />
 	While a standard edge card connector will work, I recommend a wire wrap edge card connector.
 	The pins will stick out to allow addition of a 32k daughter board.
 	If using wire wrap edge card connector AMP 4-530390-6, Space it off board about 1/4" so otherside sticks out about 1/2".<br />
+	Must power up SD drive first then console.<br />
 
 I built this on a wire wrap board and tested.<br />
 I've included the KICAD schematic but no PCB.<br />
