@@ -1,7 +1,8 @@
 # TI-99/4a SD Disk Project
 Allows TI to use floppy images on SD card
 
-Note:	Added PCB layout and Gerber files.<br />
+Note:	Make sure you have the latest board 4/26/22.<br />
+	When I changed from KiCad 5 to KiCad 6 the pins got swapped on the side port connector.<br /><br />
 	This should go without saying but the edge card connector goes on bottom of the board, Not components side.
 	Also If you can't figure out where the emitter, base & collector is on a transistor. This project is not for you.<br />
 	While a standard edge card connector will work, I recommend a wire wrap edge card connector.
