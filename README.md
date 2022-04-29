@@ -33,7 +33,7 @@ The cartridge is optional, You will need FLASHROM99 to run it.<br />
 <br />
 If someone does build this, Please let me know.<br />
 I have mine working for a couple years.<br />
-<br />
+dennishsr@charter.net<br />
 
 You must use a 16MHz Atmega162<br />
 Low High Extend<br />
