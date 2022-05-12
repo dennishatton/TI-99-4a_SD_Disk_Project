@@ -3,6 +3,8 @@ Allows TI to use floppy images on SD card
 <br />
 <br />
 Note:<br />
+	If you have downloaded the PCBs, Please update 5/11/22<br /><br />
+
 	I have uploaded a new SD Drive board that does not need the adaptor.<br />
 	I have also uploaded the adaptor and 32K daughter board.<br />
 	<br />
