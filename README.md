@@ -5,8 +5,7 @@ Allows TI to use floppy images on SD card
 Note:<br />
 	If you have downloaded the PCBs, Please update 5/17/22<br /><br />
 
-	I have uploaded a new SD Drive board that does not need the adaptor.<br />
-	I have also uploaded the adaptor and 32K daughter board.<br />
+	I have also uploaded 32K board, RS232 board and ESP-01 adaptor for Telnet transfers<br />
 	<br />
 	If you have already order the old PCBs as I have.<br />
 	You will need the adaptor board. See the Adaptor ReadMe.pdf in KiCad folder.<br />
@@ -41,12 +40,12 @@ You must use a 16MHz Atmega162<br />
 Low High Extend<br />
 with fuses FF D9 FF<br />
 <br />
-I have moved the Atmega project from MPLABX to Microchip Studio.<br />
+Can use ESP-01 adaptor to Telnet send/receive volumes from PC to SD Drive.<br />
 Also allowed the TI to access the ATmega usart<br />
 by writing to the FDC Command register and reading or writing data registers.<br />
 0x83 read usart status, 0x84 read usart data, 0x85 write usart data.<br />
 There is a 128 byte buffer storing status & char received. (64 chars)<br />
-The baud is 115.2k 8N1. I may latter let TI change baud<br />
+The baud is 115.2k 8N1.<br />
 
 ![20210210_215252-ConvertImage](https://user-images.githubusercontent.com/6753466/107654000-d8295f80-6c47-11eb-8724-41792cc1835e.jpg)
 
