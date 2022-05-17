@@ -1,0 +1,1836 @@
+XAS99 CROSS-ASSEMBLER   VERSION 3.1.0
+     **** ****     > VolMgrC.a99
+0001               ****************************************
+0002               * VOLUME MANAGER                       *
+0003               * For TI-99/4a SD CARD FDC EMULATOR    *
+0004               * By Dennis D Hatton Sr                *
+0005               * Sept 2021                            *
+0006               ****************************************
+0007               
+0008      2094     EAREG	EQU >2094	;EA Registers
+0009      209A     DSRREG EQU >209A
+0010      2700     MYREG	EQU >2700	;My Registers
+0011      2720     BUFF1	EQU >2720	;223 bytes
+0012      27FD     DSKNUM	EQU >27FD	;Saved disk number for DSK1-3 (3 bytes)
+0013      2800     BUFF2	EQU >2800	;6144 bytes available, 2880 used
+0014      2720     KEYBUF EQU BUFF1
+0015               *R7 = Current Volume
+0016               *
+0017               	AORG >6000	;Standard Header (ROM can have programs)
+0018 6000 AA       	BYTE >AA	;6000	Identification
+0019 6001   01     	BYTE >01	;6001	Version number
+0020 6002 00       	BYTE 0		;6002	Number of programs
+0021 6003   00     	BYTE 0		;6003	Reserved
+0022 6004 0000     	DATA 0		;6004	Power up routine header
+0023 6006 6010     	DATA PRGM	;6006	User program header
+0024 6008 0000     	DATA 0		;6008	DSR header
+0025 600A 0000     	DATA 0		;600A	Subroutine link header
+0026 600C 0000     	DATA 0		;600C	Address of interrupt link
+0027 600E 0000     	DATA 0		;600E	Address of BASIC subroutine libraries
+0028               ***
+0029 6010 0000     PRGM	DATA >0000
+0030 6012 6304     	DATA START
+0031 6014 0E       	BYTE _MSG1-MSG1
+0032 6015   56     MSG1	TEXT 'VOLUME MANAGER'
+     6016 4F4C     
+     6018 554D     
+     601A 4520     
+     601C 4D41     
+     601E 4E41     
+     6020 4745     
+     6022 52       
+0033               _MSG1
+0034               *
+0035 6023   53     MSG2	TEXT 'SPACE=NXT F9=BACK 1-3=CAT_DSK1-3'
+     6024 5041     
+     6026 4345     
+     6028 3D4E     
+     602A 5854     
+     602C 2046     
+     602E 393D     
+     6030 4241     
+     6032 434B     
+     6034 2031     
+     6036 2D33     
+     6038 3D43     
+     603A 4154     
+     603C 5F44     
+     603E 534B     
+     6040 312D     
+     6042 33       
+0036               _MSG2
+0037 6043   52     MSG3	TEXT 'READING VOLUME NAMES'
+     6044 4541     
+     6046 4449     
+     6048 4E47     
+     604A 2056     
+     604C 4F4C     
+     604E 554D     
+     6050 4520     
+     6052 4E41     
+     6054 4D45     
+     6056 53       
+0038               _MSG3
+0039 6057   44     MSG4	TEXT 'DSK1.     DSK2.     DSK3.     '
+     6058 534B     
+     605A 312E     
+     605C 2020     
+     605E 2020     
+     6060 2044     
+     6062 534B     
+     6064 322E     
+     6066 2020     
+     6068 2020     
+     606A 2044     
+     606C 534B     
+     606E 332E     
+     6070 2020     
+     6072 2020     
+     6074 20       
+0040               _MSG4
+0041 6075   20     MSG5	TEXT '  SENDING VOLUME'
+     6076 2053     
+     6078 454E     
+     607A 4449     
+     607C 4E47     
+     607E 2056     
+     6080 4F4C     
+     6082 554D     
+     6084 45       
+0042               _MSG5
+0043 6085   52     MSG6	TEXT 'RECEIVING VOLUME'
+     6086 4543     
+     6088 4549     
+     608A 5649     
+     608C 4E47     
+     608E 2056     
+     6090 4F4C     
+     6092 554D     
+     6094 45       
+0044               _MSG6
+0045 6095   43     MSG7	TEXT 'CATALOG DISK'
+     6096 4154     
+     6098 414C     
+     609A 4F47     
+     609C 2044     
+     609E 4953     
+     60A0 4B       
+0046               _MSG7
+0047 60A1   20     MSG8	TEXT '  DSK1 -  DISKNAME=             '
+     60A2 2044     
+     60A4 534B     
+     60A6 3120     
+     60A8 2D20     
+     60AA 2044     
+     60AC 4953     
+     60AE 4B4E     
+     60B0 414D     
+     60B2 453D     
+     60B4 2020     
+     60B6 2020     
+     60B8 2020     
+     60BA 2020     
+     60BC 2020     
+     60BE 2020     
+     60C0 20       
+0048 60C1   20     	TEXT '  AVAILABLE=      USED=         '
+     60C2 2041     
+     60C4 5641     
+     60C6 494C     
+     60C8 4142     
+     60CA 4C45     
+     60CC 3D20     
+     60CE 2020     
+     60D0 2020     
+     60D2 2055     
+     60D4 5345     
+     60D6 443D     
+     60D8 2020     
+     60DA 2020     
+     60DC 2020     
+     60DE 2020     
+     60E0 20       
+0049 60E1   20     	TEXT '   FILENAME  SIZE    TYPE    P  '
+     60E2 2020     
+     60E4 4649     
+     60E6 4C45     
+     60E8 4E41     
+     60EA 4D45     
+     60EC 2020     
+     60EE 5349     
+     60F0 5A45     
+     60F2 2020     
+     60F4 2020     
+     60F6 5459     
+     60F8 5045     
+     60FA 2020     
+     60FC 2020     
+     60FE 5020     
+     6100 20       
+0050 6101   20     	TEXT '  ---------- ---- ---------- -  '
+     6102 202D     
+     6104 2D2D     
+     6106 2D2D     
+     6108 2D2D     
+     610A 2D2D     
+     610C 2D20     
+     610E 2D2D     
+     6110 2D2D     
+     6112 202D     
+     6114 2D2D     
+     6116 2D2D     
+     6118 2D2D     
+     611A 2D2D     
+     611C 2D20     
+     611E 2D20     
+     6120 20       
+0051               _MSG8
+0052 6121   54     MSG9	TEXT 'TRANSFER FAILED OR CANCELED'
+     6122 5241     
+     6124 4E53     
+     6126 4645     
+     6128 5220     
+     612A 4641     
+     612C 494C     
+     612E 4544     
+     6130 204F     
+     6132 5220     
+     6134 4341     
+     6136 4E43     
+     6138 454C     
+     613A 4544     
+0053               _MSG9
+0054 613C 5452     MSG10	TEXT 'TRANSFER COMPLETE'
+     613E 414E     
+     6140 5346     
+     6142 4552     
+     6144 2043     
+     6146 4F4D     
+     6148 504C     
+     614A 4554     
+     614C 45       
+0055               _MSG10
+0056 614D   50     MSG11	TEXT 'PRESS ANY KEY TO RETURN'
+     614E 5245     
+     6150 5353     
+     6152 2041     
+     6154 4E59     
+     6156 204B     
+     6158 4559     
+     615A 2054     
+     615C 4F20     
+     615E 5245     
+     6160 5455     
+     6162 524E     
+0057               _MSG11
+0058               ****************************************
+0059               *Help Message
+0060               ****************************************
+0061 6164 2848     MSG12	TEXT '(H) HELP'
+     6166 2920     
+     6168 4845     
+     616A 4C50     
+0062 616C 0D0D     _MSG12	BYTE 13,13
+0063 616E 4643     	TEXT 'FCTN(=) QUIT'
+     6170 544E     
+     6172 283D     
+     6174 2920     
+     6176 5155     
+     6178 4954     
+0064 617A 0D       	BYTE 13
+0065 617B   46     	TEXT 'FCTN(9) BACK'
+     617C 4354     
+     617E 4E28     
+     6180 3929     
+     6182 2042     
+     6184 4143     
+     6186 4B       
+0066 6187   0D     	BYTE 13,13
+     6188 0D       
+0067 6189   28     	TEXT '(E),FCTN(E) UP'
+     618A 4529     
+     618C 2C46     
+     618E 4354     
+     6190 4E28     
+     6192 4529     
+     6194 2055     
+     6196 50       
+0068 6197   0D     	BYTE 13
+0069 6198 2858     	TEXT '(X),FCTN(X) DOWN'
+     619A 292C     
+     619C 4643     
+     619E 544E     
+     61A0 2858     
+     61A2 2920     
+     61A4 444F     
+     61A6 574E     
+0070 61A8 0D       	BYTE 13
+0071 61A9   28     	TEXT '(S),FCTN(S) LEFT'
+     61AA 5329     
+     61AC 2C46     
+     61AE 4354     
+     61B0 4E28     
+     61B2 5329     
+     61B4 204C     
+     61B6 4546     
+     61B8 54       
+0072 61B9   0D     	BYTE 13
+0073 61BA 2844     	TEXT '(D),FCTN(D) RIGHT'
+     61BC 292C     
+     61BE 4643     
+     61C0 544E     
+     61C2 2844     
+     61C4 2920     
+     61C6 5249     
+     61C8 4748     
+     61CA 54       
+0074 61CB   0D     	BYTE 13
+0075 61CC 2853     	TEXT '(SPACEBAR) PAGE DOWN'
+     61CE 5041     
+     61D0 4345     
+     61D2 4241     
+     61D4 5229     
+     61D6 2050     
+     61D8 4147     
+     61DA 4520     
+     61DC 444F     
+     61DE 574E     
+0076 61E0 0D0D     	BYTE 13,13
+0077 61E2 2831     	TEXT '(1) MOUNT VOLUME DSK1'
+     61E4 2920     
+     61E6 4D4F     
+     61E8 554E     
+     61EA 5420     
+     61EC 564F     
+     61EE 4C55     
+     61F0 4D45     
+     61F2 2044     
+     61F4 534B     
+     61F6 31       
+0078 61F7   0D     	BYTE 13
+0079 61F8 2832     	TEXT '(2) MOUNT VOLUME DSK2'
+     61FA 2920     
+     61FC 4D4F     
+     61FE 554E     
+     6200 5420     
+     6202 564F     
+     6204 4C55     
+     6206 4D45     
+     6208 2044     
+     620A 534B     
+     620C 32       
+0080 620D   0D     	BYTE 13
+0081 620E 2833     	TEXT '(3) MOUNT VOLUME DSK3'
+     6210 2920     
+     6212 4D4F     
+     6214 554E     
+     6216 5420     
+     6218 564F     
+     621A 4C55     
+     621C 4D45     
+     621E 2044     
+     6220 534B     
+     6222 33       
+0082 6223   0D     	BYTE 13,13
+     6224 0D       
+0083 6225   46     	TEXT 'FCTN(1) CATALOG DSK1'
+     6226 4354     
+     6228 4E28     
+     622A 3129     
+     622C 2043     
+     622E 4154     
+     6230 414C     
+     6232 4F47     
+     6234 2044     
+     6236 534B     
+     6238 31       
+0084 6239   0D     	BYTE 13
+0085 623A 4643     	TEXT 'FCTN(2) CATALOG DSK2'
+     623C 544E     
+     623E 2832     
+     6240 2920     
+     6242 4341     
+     6244 5441     
+     6246 4C4F     
+     6248 4720     
+     624A 4453     
+     624C 4B32     
+0086 624E 0D       	BYTE 13
+0087 624F   46     	TEXT 'FCTN(3) CATALOG DSK3'
+     6250 4354     
+     6252 4E28     
+     6254 3329     
+     6256 2043     
+     6258 4154     
+     625A 414C     
+     625C 4F47     
+     625E 2044     
+     6260 534B     
+     6262 33       
+0088 6263   0D     	BYTE 13
+0089 6264 2845     	TEXT '(ENTER) CATALOG VOLUME'
+     6266 4E54     
+     6268 4552     
+     626A 2920     
+     626C 4341     
+     626E 5441     
+     6270 4C4F     
+     6272 4720     
+     6274 564F     
+     6276 4C55     
+     6278 4D45     
+0090 627A 0D0D     	BYTE 13,13
+0091 627C 5445     	TEXT 'TELNET FCTN(5)-SEND FCTN(6)-RECV'
+     627E 4C4E     
+     6280 4554     
+     6282 2046     
+     6284 4354     
+     6286 4E28     
+     6288 3529     
+     628A 2D53     
+     628C 454E     
+     628E 4420     
+     6290 4643     
+     6292 544E     
+     6294 2836     
+     6296 292D     
+     6298 5245     
+     629A 4356     
+0092 629C 00       	BYTE 0
+0093               	EVEN
+0094               ****************************************
+0095 629E 4449     TYPTBL	TEXT 'DIS/FIX DIS/VAR INT/FIX INT/VAR PROGRAM'
+     62A0 532F     
+     62A2 4649     
+     62A4 5820     
+     62A6 4449     
+     62A8 532F     
+     62AA 5641     
+     62AC 5220     
+     62AE 494E     
+     62B0 542F     
+     62B2 4649     
+     62B4 5820     
+     62B6 494E     
+     62B8 542F     
+     62BA 5641     
+     62BC 5220     
+     62BE 5052     
+     62C0 4F47     
+     62C2 5241     
+     62C4 4D       
+0096 62C5   30     ASCII0	TEXT '0'
+0097 62C6 BF       BF	BYTE >BF
+0098      605C     SPACE	EQU MSG4+5
+0099      605B     ;DOT	EQU MSG4+4	;Defined in DSRLNK
+0100               *********************
+0101               	EVEN
+0102      1000     PABBUF	EQU >1000
+0103      0F80     PAB	EQU >F80
+0104      837C     STATUS	EQU >837C
+0105      8356     PNTR	EQU >8356
+0106 62C8 000D     PDATA	DATA >000D,PABBUF,>0000,>0000,>0005
+     62CA 1000     
+     62CC 0000     
+     62CE 0000     
+     62D0 0005     
+0107 62D2 4453     	TEXT 'DSK1.'
+     62D4 4B31     
+     62D6 2E       
+0108               	EVEN
+0109               *********************
+0110               	EVEN
+0111 62D8 000A     N10	DATA 10
+0112 62DA 0064     N100	DATA 100
+0113 62DC 03E8     N1000	DATA 1000
+0114 62DE 0030     N48	DATA 48
+0115 62E0 0003     N3	DATA 3
+0116 62E2 0050     N80	DATA 80
+0117 62E4 1000     H1000	DATA >1000
+0118 62E6 8000     H8000	DATA >8000
+0119 62E8 00       H00	BYTE 0
+0120 62E9   0D     H0D	BYTE 13
+0121               	EVEN
+0122               **********************
+0123               *Sprite Attributes
+0124 62EA 2000     SPRATR	BYTE 32,0,128,9
+     62EC 8009     
+0125 62EE 2010     	BYTE 32,16,128,9
+     62F0 8009     
+0126 62F2 2020     	BYTE 32,32,128,9
+     62F4 8009     
+0127 62F6 2030     	BYTE 32,48,128,9
+     62F8 8009     
+0128 62FA D0       	BYTE >D0
+0129 62FB   00     SPRPAT	BYTE >00,>00,>00,>FF,>00,>00,>00,>FF
+     62FC 0000     
+     62FE FF00     
+     6300 0000     
+     6302 FF       
+0130               	EVEN
+0131               
+0132 6304 02E0  18 START	LWPI MYREG
+     6306 2700     
+0133 6308 04E0  34 	CLR @>8374		;Set scan for complete keyboard
+     630A 8374     
+0134 630C 04C7  14 	CLR R7			;Set current volume = 000
+0135               
+0136               ****************************************
+0137               *** Get VOLUME names from FDC
+0138               ****************************************
+0139 630E 020C  20 GETNAM	LI R12,>1100		;Disk CRU address
+     6310 1100     
+0140 6312 1D00  20 	SBO 0			;Turn disk card on
+0141 6314 0200  20 	LI R0,>7D00		;Command >82 inverted
+     6316 7D00     
+0142 6318 D800  38 	MOVB R0,@>5FF8		;Send command
+     631A 5FF8     
+0143               
+0144               * Display 'READING VOLUME NAMES'
+0145 631C 0200  20 	LI R0,ROW8+1		;
+     631E 0101     
+0146 6320 0201  20 	LI R1,MSG3
+     6322 6043     
+0147 6324 0202  20 	LI R2,_MSG3-MSG3	;
+     6326 0014     
+0148 6328 0420  54 	BLWP @VMBW
+     632A 6B7C     
+0149 632C 0220  22 	AI R0,_MSG3-MSG3	;
+     632E 0014     
+0150 6330 D060  34 	MOVB @DOT,R1		;'.'
+     6332 6A8A     
+0151               
+0152 6334 0205  20 	LI R5,DSKNUM
+     6336 27FD     
+0153 6338 0204  20 	LI R4,3			;3 drives
+     633A 0003     
+0154 633C D1A0  34 LP05	MOVB @>5FFE,R6		;Get DSKx Volume
+     633E 5FFE     
+0155 6340 0546  14 	INV R6
+0156 6342 DD46  32 	MOVB R6,*R5+		;Store in BUFF1
+0157 6344 0604  14 	DEC R4			;Next
+0158 6346 16FA  14 	JNE LP05		; "
+0159               
+0160 6348 0205  20 	LI R5,BUFF2
+     634A 2800     
+0161 634C 0202  20 	LI R2,256		;256 Volumes
+     634E 0100     
+0162 6350 04C3  14 	CLR R3			;Volume number 0
+0163 6352 0420  54 LP01	BLWP @VSBW		;Put '.' on screen
+     6354 6B78     
+0164 6356 0580  14 	INC R0			;Inc screen position
+0165               *** Remark below to test on emulator
+0166 6358 0204  20 	LI R4,10		;10 Chars per disk name
+     635A 000A     
+0167 635C D1A0  34 LP08	MOVB @>5FFE,R6		;Get Char
+     635E 5FFE     
+0168 6360 0546  14 	INV R6			;Invert
+0169 6362 DD46  32 	MOVB R6,*R5+		;Store Char in buffer
+0170 6364 0604  14 	DEC R4			;Next Char
+0171 6366 16FA  14 	JNE LP08		; "
+0172               *** Use for testing on emulator
+0173               *	LI R6,'T '
+0174               *	MOVB R6,*R5+
+0175               *	LI R6,'I '
+0176               *	MOVB R6,*R5+
+0177               *	LI R6,'V '
+0178               *	MOVB R6,*R5+
+0179               *	LI R6,'O '
+0180               *	MOVB R6,*R5+
+0181               *	LI R6,'L '
+0182               *	MOVB R6,*R5+
+0183               *	MOV R3,R9
+0184               *	INC R3
+0185               *	LI R1,BUFF1
+0186               *	BL @CV2ASC
+0187               *	MOVB @BUFF1+1,*R5+
+0188               *	MOVB @BUFF1+2,*R5+
+0189               *	MOVB @BUFF1+3,*R5+
+0190               *	LI R6,'  '
+0191               *	MOVB R6,*R5+
+0192               *	MOVB R6,*R5+
+0193               ***
+0194 6368 0602  14 	DEC R2			;Next Volume
+0195 636A 16F3  14 	JNE LP01		; "
+0196 636C 1E00  20 	SBZ 0			;Turn disk card off
+0197               
+0198               *Pad rest of buffer with space
+0199 636E 0202  20 	LI R2,320
+     6370 0140     
+0200 6372 0206  20 	LI R6,'  '
+     6374 2020     
+0201 6376 DD46  32 LP18	MOVB R6,*R5+
+0202 6378 0602  14 	DEC R2
+0203 637A 16FD  14 	JNE LP18
+0204               
+0205               *Set sprite attributes
+0206 637C 0200  20 	LI R0,768
+     637E 0300     
+0207 6380 0201  20 	LI R1,SPRATR
+     6382 62EA     
+0208 6384 0202  20 	LI R2,17
+     6386 0011     
+0209 6388 0420  54 	BLWP @VMBW
+     638A 6B7C     
+0210               
+0211 638C 0200  20 	LI R0,>0400		;Hi-Lite pattern
+     638E 0400     
+0212 6390 0201  20 	LI R1,SPRPAT
+     6392 62FB     
+0213 6394 0202  20 	LI R2,8
+     6396 0008     
+0214 6398 0420  54 	BLWP @VMBW
+     639A 6B7C     
+0215               
+0216 639C 0200  20 	LI R0,>E101		;Magnify 2 sprites
+     639E E101     
+0217 63A0 D800  38 	MOVB R0,@>83D4
+     63A2 83D4     
+0218 63A4 06C0  14 	SWPB R0
+0219 63A6 0420  54 	BLWP @VWTR
+     63A8 6B88     
+0220               ****************************************
+0221               *** Put header and footer on screen
+0222               ****************************************
+0223 63AA 06A0  32 MAIN	BL @CLS			;Clear screen
+     63AC 67F8     
+0224               
+0225 63AE 0200  20 	LI R0,ROW0+9		;Header
+     63B0 0009     
+0226 63B2 0201  20 	LI R1,MSG1
+     63B4 6015     
+0227 63B6 0202  20 	LI R2,_MSG1-MSG1	;
+     63B8 000E     
+0228 63BA 0420  54 	BLWP @VMBW
+     63BC 6B7C     
+0229               
+0230 63BE 06A0  32 	BL @DSPDSK		;Drives disk names
+     63C0 682C     
+0231               
+0232 63C2 0200  20 	LI R0,ROW22+22		;Footer
+     63C4 02D6     
+0233 63C6 0201  20 	LI R1,MSG12
+     63C8 6164     
+0234 63CA 0202  20 	LI R2,_MSG12-MSG12	;
+     63CC 0008     
+0235 63CE 0420  54 	BLWP @VMBW
+     63D0 6B7C     
+0236               
+0237               ****************************************
+0238               *** Display volume names
+0239               ****************************************
+0240 63D2 0247  22 DSPNAM	ANDI R7,>00FF		;Wrap around Volume number 0-255
+     63D4 00FF     
+0241 63D6 04C0  14 	CLR R0			;Clear MSWord
+0242 63D8 C047  18 	MOV R7,R1		;Get current volume number
+0243 63DA 3C20 144 	DIV @N48,R0		;Calc page number 0-5
+     63DC 62DE     
+0244 63DE C101  18 	MOV R1,R4		;Remainder = selection on page
+0245               
+0246 63E0 3820  72 	MPY @N48,R0		;Calc 1st volume number on page
+     63E2 62DE     
+0247 63E4 C001  18 	MOV R1,R0		;Times ten for location in buffer
+0248 63E6 3820  72 	MPY @N10,R0		; "
+     63E8 62D8     
+0249 63EA 0221  22 	AI R1,BUFF2		;Point to 1st volume address in buffer
+     63EC 2800     
+0250               
+0251 63EE 0203  20 	LI R3,16		;16 Rows on page
+     63F0 0010     
+0252 63F2 0202  20 	LI R2,10		;10 chars
+     63F4 000A     
+0253 63F6 0200  20 	LI R0,ROW5		;Starting row
+     63F8 00A0     
+0254 63FA 0420  54 LP02	BLWP @VMBW
+     63FC 6B7C     
+0255 63FE 0220  22 	AI R0,11
+     6400 000B     
+0256 6402 0221  22 	AI R1,10
+     6404 000A     
+0257 6406 0420  54 	BLWP @VMBW
+     6408 6B7C     
+0258 640A 0220  22 	AI R0,11
+     640C 000B     
+0259 640E 0221  22 	AI R1,10
+     6410 000A     
+0260 6412 0420  54 	BLWP @VMBW
+     6414 6B7C     
+0261 6416 0220  22 	AI R0,10
+     6418 000A     
+0262 641A 0221  22 	AI R1,10
+     641C 000A     
+0263 641E 0603  14 	DEC R3
+0264 6420 16EC  14 	JNE LP02
+0265               
+0266               * Hi-Lite current volume
+0267 6422 04C3  14 	CLR R3
+0268 6424 3CE0 144 	DIV @N3,R3		;R3=Row,R4=Col
+     6426 62E0     
+0269 6428 0A33  56 	SLA R3,3		;R3*8 dot row
+0270 642A 0223  22 	AI R3,32		;Starting dot row
+     642C 0020     
+0271               
+0272 642E 0200  20 	LI R0,768		;Write row to sprite 0
+     6430 0300     
+0273 6432 C043  18 	MOV R3,R1		; "
+0274 6434 06C1  14 	SWPB R1			; "
+0275 6436 0420  54 	BLWP @VSBW		; "
+     6438 6B78     
+0276 643A 0220  22 	AI R0,4			;Write row to sprite 1
+     643C 0004     
+0277 643E 0420  54 	BLWP @VSBW		; "
+     6440 6B78     
+0278 6442 0220  22 	AI R0,4			;Write row to sprite 2
+     6444 0004     
+0279 6446 0420  54 	BLWP @VSBW		; "
+     6448 6B78     
+0280 644A 0220  22 	AI R0,4			;Write row to sprite 3
+     644C 0004     
+0281 644E 0420  54 	BLWP @VSBW		; "
+     6450 6B78     
+0282               ***
+0283 6452 3920  72 	MPY @N80,R4		;R4 times (8*10) dots per volume
+     6454 62E2     
+0284 6456 0225  22 	AI R5,0			;Starting dot column
+     6458 0000     
+0285 645A 0285  22 	CI R5,80
+     645C 0050     
+0286 645E 1107  14 	JLT JP16
+0287 6460 0225  22 	AI R5,8			;First char space between columns
+     6462 0008     
+0288 6464 0285  22 	CI R5,160
+     6466 00A0     
+0289 6468 1102  14 	JLT JP16
+0290 646A 0225  22 	AI R5,8			;Second char space between columns
+     646C 0008     
+0291               
+0292 646E 0200  20 JP16	LI R0,769		;Write col to sprite 0
+     6470 0301     
+0293 6472 C045  18 	MOV R5,R1		; "
+0294 6474 06C1  14 	SWPB R1			; "
+0295 6476 0420  54 	BLWP @VSBW		; "
+     6478 6B78     
+0296 647A 0220  22 	AI R0,4			;Write col to sprite 1
+     647C 0004     
+0297 647E 0221  22 	AI R1,>1000		;Add 16 dots wide per sprite
+     6480 1000     
+0298 6482 0420  54 	BLWP @VSBW		; "
+     6484 6B78     
+0299 6486 0220  22 	AI R0,4			;Write col to sprite 2
+     6488 0004     
+0300 648A 0221  22 	AI R1,>1000		;Add 16 dots wide per sprite
+     648C 1000     
+0301 648E 0420  54 	BLWP @VSBW		; "
+     6490 6B78     
+0302 6492 0220  22 	AI R0,4			;Write col to sprite 3
+     6494 0004     
+0303 6496 0221  22 	AI R1,>1000		;Add 16 dots wide per sprite
+     6498 1000     
+0304 649A 0420  54 	BLWP @VSBW		; "
+     649C 6B78     
+0305               ***
+0306               * Display current selected volume
+0307 649E C247  18 	MOV R7,R9
+0308 64A0 0201  20 	LI R1,BUFF1
+     64A2 2720     
+0309 64A4 06A0  32 	BL @CV2ASC
+     64A6 6886     
+0310               
+0311 64A8 0201  20 	LI R1,BUFF1+1		;Display Volume number
+     64AA 2721     
+0312 64AC 0200  20 	LI R0,ROW22+2
+     64AE 02C2     
+0313 64B0 0202  20 	LI R2,3
+     64B2 0003     
+0314 64B4 0420  54 	BLWP @VMBW
+     64B6 6B7C     
+0315               
+0316 64B8 C007  18 	MOV R7,R0		;Times ten for location in buffer
+0317 64BA 3820  72 	MPY @N10,R0		; "
+     64BC 62D8     
+0318 64BE 0221  22 	AI R1,BUFF2		;Point to 1st volume address in buffer
+     64C0 2800     
+0319 64C2 0200  20 	LI R0,ROW22+6
+     64C4 02C6     
+0320 64C6 0202  20 	LI R2,10		;Display 10 characters
+     64C8 000A     
+0321 64CA 0420  54 	BLWP @VMBW
+     64CC 6B7C     
+0322               
+0323               
+0324               ****************************************
+0325               *** Get input from keyboard
+0326               ****************************************
+0327 64CE 0420  54 GETKEY	BLWP @KSCAN
+     64D0 6B74     
+0328 64D2 D020  34 	MOVB @STATUS,R0
+     64D4 837C     
+0329 64D6 13FB  14 	JEQ GETKEY
+0330               
+0331 64D8 04C3  14 	CLR R3
+0332 64DA D0E0  34 	MOVB @>8375,R3
+     64DC 8375     
+0333 64DE 0283  22 	CI R3,>0500		;FCTN '=' QUIT
+     64E0 0500     
+0334 64E2 1370  14 	JEQ QUIT
+0335               
+0336 64E4 0283  22 	CI R3,>3100		;'1' Change DSK1
+     64E6 3100     
+0337 64E8 1306  14 	JEQ JP04
+0338 64EA 0283  22 	CI R3,>3200		;'2' Change DSK2
+     64EC 3200     
+0339 64EE 1303  14 	JEQ JP04
+0340 64F0 0283  22 	CI R3,>3300		;'3' Change DSK3
+     64F2 3300     
+0341 64F4 1607  14 	JNE JP15
+0342 64F6 0243  22 JP04   	ANDI R3,>0300		;31-32 to 1-3
+     64F8 0300     
+0343 64FA 06A0  32 	BL @CHGDSK		;Call change disk
+     64FC 67CC     
+0344 64FE 06A0  32  	BL @DSPDSK		;Call display drives
+     6500 682C     
+0345 6502 10E5  14 	JMP GETKEY		;Loop back to kscan
+0346               
+0347 6504 0283  22 JP15	CI R3,>0300		;FCTN '1' Catalog DSK1
+     6506 0300     
+0348 6508 130F  14 	JEQ JP21
+0349 650A 0283  22 	CI R3,>0400		;FCTN '2' Catalog DSK2
+     650C 0400     
+0350 650E 130C  14 	JEQ JP21
+0351 6510 0283  22 	CI R3,>0700		;FCTN '3' Catalog DSK3
+     6512 0700     
+0352 6514 1309  14 	JEQ JP21
+0353 6516 0283  22 	CI R3,>0D00		;ENTER Catalog Current Volume
+     6518 0D00     
+0354 651A 1608  14 	JNE JP22
+0355 651C 0203  20 	LI R3,>0300		;Use Drive 3
+     651E 0300     
+0356 6520 06A0  32 	BL @CHGDSK		;Change volume
+     6522 67CC     
+0357 6524 0203  20 	LI R3,>0700		;Catalog Drive 3
+     6526 0700     
+0358 6528 0913  56 JP21	SRL R3,1		;
+0359 652A 104E  14 	JMP CATDSK
+0360               
+0361 652C 0283  22 JP22	CI R3,>0E00		;FCTN-5 Transmit volume to PC
+     652E 0E00     
+0362 6530 1604  14 	JNE JP23
+0363 6532 06A0  32 	BL @XFRSND
+     6534 68D8     
+0364 6536 0460  28 	B @GETNAM
+     6538 630E     
+0365 653A 0283  22 JP23	CI R3,>0C00		;FCTN-6 Receive Volume from PC
+     653C 0C00     
+0366 653E 1604  14 	JNE JP24
+0367 6540 06A0  32 	BL @XFRRCV
+     6542 68EC     
+0368 6544 0460  28 	B @GETNAM		;Re-read volume names If changed
+     6546 630E     
+0369               
+0370 6548 0243  22 JP24	ANDI R3,>DF00		;If lowercase,make uppercase
+     654A DF00     
+0371 654C 0283  22 	CI R3,>5800		;'X'	Arrow Down
+     654E 5800     
+0372 6550 1303  14 	JEQ JP17
+0373 6552 0283  22 	CI R3,>0A00		;Fctn-X
+     6554 0A00     
+0374 6556 1604  14 	JNE JP00
+0375 6558 0227  22 JP17	AI R7,3
+     655A 0003     
+0376 655C 0460  28 	B @DSPNAM
+     655E 63D2     
+0377               
+0378 6560 0283  22 JP00	CI R3,>4500		;'E'	Arrow Up
+     6562 4500     
+0379 6564 1303  14 	JEQ JP18
+0380 6566 0283  22 	CI R3,>0B00		;Fctn-E
+     6568 0B00     
+0381 656A 1604  14 	JNE JP01
+0382 656C 0227  22 JP18	AI R7,-3
+     656E FFFD     
+0383 6570 0460  28 	B @DSPNAM
+     6572 63D2     
+0384               
+0385 6574 0283  22 JP01	CI R3,>5300		;'S'	Arrow Left
+     6576 5300     
+0386 6578 1303  14 	JEQ JP19
+0387 657A 0283  22 	CI R3,>0800		;Fctn-S
+     657C 0800     
+0388 657E 1603  14 	JNE JP02
+0389 6580 0607  14 JP19	DEC R7
+0390 6582 0460  28 	B @DSPNAM
+     6584 63D2     
+0391               
+0392 6586 0283  22 JP02	CI R3,>4400		;'D'	Arrow Right
+     6588 4400     
+0393 658A 1303  14 	JEQ JP20
+0394 658C 0283  22 	CI R3,>0900		;Fctn-D
+     658E 0900     
+0395 6590 1603  14 	JNE JP03
+0396 6592 0587  14 JP20	INC R7
+0397 6594 0460  28 	B @DSPNAM
+     6596 63D2     
+0398               
+0399 6598 0283  22 JP03	CI R3,>0000		;' '	Space PGDN
+     659A 0000     
+0400 659C 1604  14 	JNE JP30
+0401 659E 0227  22 	AI R7,48
+     65A0 0030     
+0402 65A2 0460  28 	B @DSPNAM
+     65A4 63D2     
+0403               
+0404 65A6 0283  22 JP30	CI R3,>4800		;'H'	HELP
+     65A8 4800     
+0405 65AA 1691  14 	JNE GETKEY		;Loop back to kscan
+0406 65AC 06A0  32 	BL @CLS
+     65AE 67F8     
+0407 65B0 0200  20 	LI R0,ROW1
+     65B2 0020     
+0408 65B4 0201  20 	LI R1,MSG12
+     65B6 6164     
+0409 65B8 06A0  32 	BL @PRINT
+     65BA 69E4     
+0410 65BC 06A0  32 	BL @ANYKY1
+     65BE 69BE     
+0411 65C0 0460  28 	B @MAIN
+     65C2 63AA     
+0412               
+0413 65C4 0420  54 QUIT	BLWP @>0000		;reset
+     65C6 0000     
+0414               ****************************************
+0415               *	Catalog disk
+0416               * Entry: MSB R3=drive #
+0417               ****************************************
+0418               CATDSK
+0419 65C8 06A0  32 	BL @CLS
+     65CA 67F8     
+0420               
+0421 65CC 0200  20 	LI R0,ROW0+10		;Catalog
+     65CE 000A     
+0422 65D0 0201  20 	LI R1,MSG7
+     65D2 6095     
+0423 65D4 0202  20 	LI R2,_MSG7-MSG7	;
+     65D6 000C     
+0424 65D8 0420  54 	BLWP @VMBW
+     65DA 6B7C     
+0425               
+0426 65DC 0200  20 	LI R0,ROW22		;Footer
+     65DE 02C0     
+0427 65E0 0201  20 	LI R1,MSG2
+     65E2 6023     
+0428 65E4 0202  20 	LI R2,_MSG2-MSG2	;
+     65E6 0020     
+0429 65E8 0420  54 	BLWP @VMBW
+     65EA 6B7C     
+0430               
+0431 65EC 0200  20 	LI R0,ROW2		;Disk info at top
+     65EE 0040     
+0432 65F0 0201  20 	LI R1,MSG8
+     65F2 60A1     
+0433 65F4 0202  20 	LI R2,_MSG8-MSG8	;
+     65F6 0080     
+0434 65F8 0420  54 	BLWP @VMBW
+     65FA 6B7C     
+0435               
+0436 65FC 0263  22 	ORI R3,>3000		;Value to ASCII
+     65FE 3000     
+0437 6600 D043  18 	MOVB R3,R1
+0438 6602 0200  20 	LI R0,ROW2+5		;Replace DSK# on screen
+     6604 0045     
+0439 6606 0420  54 	BLWP @VSBW
+     6608 6B78     
+0440               
+0441 660A 06A0  32 	BL @DSROP
+     660C 6776     
+0442 660E 06A0  32 	BL @DSRRD
+     6610 6794     
+0443               
+0444 6612 0200  20 	LI R0,ROW2+20		;Display disk name
+     6614 0054     
+0445 6616 0201  20 	LI R1,BUFF1		;Point to name in buffer
+     6618 2720     
+0446 661A D0B1  28 	MOVB *R1+,R2		;Name length (Should be 10)
+0447 661C 0982  56 	SRL R2,8
+0448 661E C142  18 	MOV R2,R5
+0449 6620 0420  54 	BLWP @VMBW
+     6622 6B7C     
+0450               
+0451 6624 0200  20 	LI R0,BUFF1+11		;Point total sectors Float
+     6626 272B     
+0452 6628 A005  18 	A R5,R0			;Add name length
+0453 662A 06A0  32 	BL @FL2INT		;R9 = Integer on return
+     662C 6740     
+0454 662E C0C9  18 	MOV R9,R3		;Save total Int
+0455               
+0456 6630 0200  20  	LI R0,BUFF1+20		;;Point available sectors Float
+     6632 2734     
+0457 6634 A005  18 	A R5,R0			;Add name length
+0458 6636 06A0  32 	BL @FL2INT		;
+     6638 6740     
+0459 663A 60C9  18 	S R9,R3			;R3 = Used sectors (total - available)
+0460               
+0461 663C 0200  20 	LI R0,ROW3+12		;Put AVAILABLE sectors on screen
+     663E 006C     
+0462 6640 06A0  32 	BL @DSPINT
+     6642 675E     
+0463               
+0464 6644 C243  18 	MOV R3,R9
+0465 6646 0200  20 	LI R0,ROW3+23		;Put USED sectors on screen
+     6648 0077     
+0466 664A 06A0  32 	BL @DSPINT
+     664C 675E     
+0467               ***
+0468               LP16
+0469 664E 0200  20 	LI R0,ROW6
+     6650 00C0     
+0470 6652 0201  20 	LI R1,>2000
+     6654 2000     
+0471 6656 0202  20 	LI R2,448
+     6658 01C0     
+0472 665A 0420  54 LP15	BLWP @VSBW
+     665C 6B78     
+0473 665E 0580  14 	INC R0
+0474 6660 0602  14 	DEC R2
+0475 6662 16FB  14 	JNE LP15
+0476               
+0477 6664 0204  20 	LI R4,14
+     6666 000E     
+0478 6668 0203  20 	LI R3,ROW6+2
+     666A 00C2     
+0479               LP14
+0480 666C 06A0  32 	BL @DSRRD		;Read record into BUFF1
+     666E 6794     
+0481 6670 0201  20 	LI R1,BUFF1
+     6672 2720     
+0482 6674 D0B1  28 	MOVB *R1+,R2		;File name Char count
+0483 6676 0982  56 	SRL R2,8		;
+0484 6678 1343  14 	JEQ LP13		;All read
+0485 667A C142  18 	MOV R2,R5		;Save name length
+0486 667C C003  18  	MOV R3,R0		;Restore Row address
+0487 667E 0420  54 	BLWP @VMBW		;Display file name
+     6680 6B7C     
+0488               *
+0489 6682 0200  20 	LI R0,BUFF1+11		;Size offset from name
+     6684 272B     
+0490 6686 A005  18 	A R5,R0		;Add name length
+0491 6688 06A0  32 	BL @FL2INT		;R9 = Integer on return
+     668A 6740     
+0492 668C C003  18 	MOV R3,R0		;Restore Row address
+0493 668E 0220  22 	AI R0,11		;Screen address for Size
+     6690 000B     
+0494 6692 06A0  32 	BL @DSPINT		;Display size
+     6694 675E     
+0495               *
+0496 6696 0200  20  	LI R0,BUFF1+20		;Record size
+     6698 2734     
+0497 669A A005  18 	A R5,R0		;
+0498 669C 06A0  32 	BL @FL2INT		;
+     669E 6740     
+0499 66A0 0289  22 	CI R9,0		;Is type Program?
+     66A2 0000     
+0500 66A4 1305  14 	JEQ JP11		;
+0501 66A6 C003  18 	MOV R3,R0		;Restore Row address
+0502 66A8 0220  22 	AI R0,22		;
+     66AA 0016     
+0503 66AC 06A0  32 	BL @DSPINT		;
+     66AE 675E     
+0504               *
+0505 66B0 0200  20 JP11	LI R0,BUFF1+2		;Type
+     66B2 2722     
+0506 66B4 A005  18 	A R5,R0		;Add name length
+0507 66B6 D270  28 	MOVB *R0+,R9		;MSByte BF or 40,LSBYTE type 0-5
+0508 66B8 06C9  14 	SWPB R9
+0509 66BA D250  26 	MOVB *R0,R9
+0510 66BC 06C9  14 	SWPB R9
+0511 66BE 020A  20 	LI R10,>2000		;' '
+     66C0 2000     
+0512 66C2 9809  38 	CB R9,@BF		;Protected?
+     66C4 62C6     
+0513 66C6 1604  14 	JNE JP14		;Not protected
+0514 66C8 020A  20 	LI R10,>5900		;'Y'
+     66CA 5900     
+0515 66CC 0549  14 	INV R9			;0-4
+0516 66CE 0589  14 	INC R9			;1-5
+0517               
+0518 66D0 0249  22 JP14	ANDI R9,>00FF		;
+     66D2 00FF     
+0519               
+0520 66D4 C003  18 	MOV R3,R0		;Restore Row address
+0521 66D6 0220  22 	AI R0,16		;Screen address for Type
+     66D8 0010     
+0522 66DA 0201  20 	LI R1,TYPTBL		;Point type table
+     66DC 629E     
+0523 66DE 0609  14 	DEC R9			;1-5 to 0-4
+0524 66E0 0A39  56 	SLA R9,3		;Times 8
+0525 66E2 A049  18 	A R9,R1
+0526 66E4 0202  20 	LI R2,7
+     66E6 0007     
+0527 66E8 0420  54 	BLWP @VMBW
+     66EA 6B7C     
+0528               
+0529 66EC C003  18 	MOV R3,R0		;Restore Row address
+0530 66EE 0220  22 	AI R0,27		;Screen address for Protected
+     66F0 001B     
+0531 66F2 C04A  18 	MOV R10,R1		;Point type table
+0532 66F4 0420  54 	BLWP @VSBW
+     66F6 6B78     
+0533               *
+0534 66F8 0223  22 	AI R3,32		;Next row
+     66FA 0020     
+0535 66FC 0604  14 	DEC R4
+0536 66FE 16B6  14 	JNE LP14
+0537               
+0538 6700 0420  54 LP13	BLWP @KSCAN
+     6702 6B74     
+0539 6704 D020  34 	MOVB @STATUS,R0
+     6706 837C     
+0540 6708 13FB  14 	JEQ LP13
+0541 670A 04C3  14 	CLR R3
+0542 670C D0E0  34 	MOVB @>8375,R3
+     670E 8375     
+0543 6710 0283  22 	CI R3,>0F00		;FCTN '9' BACK
+     6712 0F00     
+0544 6714 1311  14 	JEQ JP08
+0545 6716 0283  22 	CI R3,>3100		;'1' Catalog DSK1
+     6718 3100     
+0546 671A 130A  14 	JEQ JP12
+0547 671C 0283  22 	CI R3,>3200		;'2' Catalog DSK2
+     671E 3200     
+0548 6720 1307  14 	JEQ JP12
+0549 6722 0283  22 	CI R3,>3300		;'3' Catalog DSK3
+     6724 3300     
+0550 6726 1304  14 	JEQ JP12
+0551               
+0552 6728 0282  22 	CI R2,0			;Was last record read empty?
+     672A 0000     
+0553 672C 13E9  14 	JEQ LP13
+0554 672E 108F  14 	JMP LP16		;Any other key next screen
+0555               
+0556 6730 06A0  32 JP12	BL @DSRCL		;New drive
+     6732 67B0     
+0557 6734 0460  28 	B @CATDSK
+     6736 65C8     
+0558               
+0559 6738 06A0  32 JP08	BL @DSRCL		;Back
+     673A 67B0     
+0560 673C 0460  28 	B @MAIN
+     673E 63AA     
+0561               
+0562               
+0563               ********************************************************************************
+0564               * Subroutines
+0565               ********************************************************************************
+0566               
+0567               * Float to Integer
+0568               * Entry: R0=pointer float Exit: R9=Int
+0569               FL2INT
+0570 6740 D270  28 	MOVB *R0+,R9
+0571 6742 0249  22 	ANDI R9,>0100	;40 1 byte 41 2 bytes
+     6744 0100     
+0572 6746 1603  14 	JNE JP10
+0573 6748 D270  28 	MOVB *R0+,R9
+0574 674A 0989  56 	SRL R9,8
+0575 674C 045B  20 	B *R11
+0576               
+0577 674E D070  28 JP10	MOVB *R0+,R1
+0578 6750 0981  56 	SRL R1,8
+0579 6752 3860  72 	MPY @N100,R1
+     6754 62DA     
+0580 6756 D250  26 	MOVB *R0,R9
+0581 6758 0989  56 	SRL R9,8
+0582 675A A242  18 	A R2,R9
+0583 675C 045B  20 	B *R11
+0584               
+0585               * Display Integer
+0586               * Entry: R0=Display position
+0587               DSPINT
+0588 675E C30B  18 	MOV R11,R12
+0589 6760 0201  20 	LI R1,BUFF1+40	;R9=word R1=buffer
+     6762 2748     
+0590 6764 06A0  32 	BL @CV2ASC		;Buffer=4 digit string
+     6766 6886     
+0591 6768 0201  20 	LI R1,BUFF1+44	;Point to leading 0s changed to space
+     676A 274C     
+0592 676C 0202  20 	LI R2,4
+     676E 0004     
+0593 6770 0420  54 	BLWP @VMBW
+     6772 6B7C     
+0594 6774 045C  20 	B *R12
+0595               
+0596               ****************************************
+0597               *	Read from disk
+0598               * Entry: MSB R3=drive #
+0599               * Exit:
+0600               * Registers used R0 R1 R2 R3
+0601               ****************************************
+0602               
+0603               * R3 MSB=drive #
+0604               DSROP
+0605 6776 0200  20 	LI R0,PAB
+     6778 0F80     
+0606 677A 0201  20 	LI R1,PDATA	;op-code >00 Open in PDATA
+     677C 62C8     
+0607 677E 0202  20 	LI R2,>20
+     6780 0020     
+0608 6782 0420  54 	BLWP @VMBW	;Move PAB data into PAB in VDP RAM
+     6784 6B7C     
+0609               
+0610 6786 D043  18 	MOVB R3,R1	;Get new drive number
+0611 6788 0200  20 	LI R0,PAB+13	;Drive number location in PAB
+     678A 0F8D     
+0612 678C 0420  54 	BLWP @VSBW	;Change drive number
+     678E 6B78     
+0613               
+0614 6790 04C1  14 	CLR R1		; Open OP
+0615 6792 1010  14 	JMP DSR
+0616               * Read 38 byte record into BUFF1
+0617               DSRRD
+0618 6794 C30B  18 	MOV R11,R12
+0619 6796 0201  20 	LI R1,>0200	;op-code >02 Read
+     6798 0200     
+0620 679A 06A0  32 	BL @DSR
+     679C 67B4     
+0621               
+0622 679E 0200  20 	LI R0,PABBUF	;Move from VDP buffer to CPU buffer
+     67A0 1000     
+0623 67A2 0201  20 	LI R1,BUFF1	;
+     67A4 2720     
+0624 67A6 0202  20 	LI R2,38	;
+     67A8 0026     
+0625 67AA 0420  54 	BLWP @VMBR	;
+     67AC 6B84     
+0626 67AE 045C  20 	B *R12
+0627               *
+0628               DSRCL
+0629 67B0 0201  20 	LI R1,>0100	; op-code >01 Close
+     67B2 0100     
+0630               *	JMP DSR		;Fall thru
+0631               * Call DSRLNK,R1=OP-code
+0632               DSR
+0633 67B4 0200  20 	LI R0,PAB
+     67B6 0F80     
+0634 67B8 0420  54 	BLWP @VSBW	;Change I/O op-code
+     67BA 6B78     
+0635               
+0636 67BC 0200  20 	LI R0,PAB+9	;Get Pointer to name length
+     67BE 0F89     
+0637 67C0 C800  38 	MOV R0,@PNTR	;Store pointer to name length @>8356
+     67C2 8356     
+0638 67C4 0420  54 	BLWP @DSRLNK	;
+     67C6 6B8C     
+0639 67C8 0008     	DATA 8
+0640 67CA 045B  20        	B    *R11
+0641               
+0642               ****************************************
+0643               *	Change disk in drives
+0644               *
+0645               * ; R3 MSByte=Drive,R4 MSByte=Disk
+0646               *
+0647               ****************************************
+0648 67CC C107  18 CHGDSK	MOV R7,R4		;Get volume number
+0649 67CE 06C4  14 	SWPB R4
+0650 67D0 0983  56 	SRL R3,8		;Move Drive # to LSByte
+0651 67D2 D8C4  38 	MOVB R4,@DSKNUM-1(R3)	;Store volume # at DSKNUM 0-2
+     67D4 27FC     
+0652 67D6 06C3  14 	SWPB R3			;Drive number back to MSByte
+0653               
+0654 67D8 020C  20 	LI R12,>1100		;Turn on DSR address space
+     67DA 1100     
+0655 67DC 1D00  20 	SBO 0
+0656 67DE 0200  20 	LI R0,>7E00		;Command >81 inverted
+     67E0 7E00     
+0657 67E2 D800  38 	MOVB R0,@>5FF8		;Send command
+     67E4 5FF8     
+0658 67E6 0543  14 	INV R3			;Invert
+0659 67E8 D803  38 	MOVB R3,@>5FFE		;Send Drive number
+     67EA 5FFE     
+0660 67EC 1000  14 	NOP
+0661 67EE 0544  14 	INV R4
+0662 67F0 D804  38 	MOVB R4,@>5FFE		;Send Disk number
+     67F2 5FFE     
+0663 67F4 1E00  20 	SBZ 0			;Turn off DSR address space
+0664               
+0665 67F6 045B  20 	B *R11
+0666               ********************************************************************
+0667               *** Clear Screen
+0668 67F8 0200  20 CLS	LI R0,768		;Turn off sprite cursor
+     67FA 0300     
+0669 67FC 0201  20 	LI R1,>D000
+     67FE D000     
+0670 6800 0420  54 	BLWP @VSBW
+     6802 6B78     
+0671               
+0672 6804 04C0  14 	CLR R0
+0673 6806 0201  20 	LI R1,>2000		;MSB=' '
+     6808 2000     
+0674 680A 0202  20 	LI R2,768
+     680C 0300     
+0675               LP04
+0676 680E 0420  54 	BLWP @VSBW
+     6810 6B78     
+0677 6812 0580  14 	INC R0
+0678 6814 0602  14 	DEC R2
+0679 6816 16FB  14 	JNE LP04
+0680 6818 045B  20 	B *R11
+0681               
+0682               *** Display '1-3=CHG DSK,FCTN 1-3=CAT DSK'
+0683 681A 0200  20 DSPCHG	LI R0,ROW23+1		;
+     681C 02E1     
+0684 681E 0201  20 	LI R1,MSG6
+     6820 6085     
+0685 6822 0202  20 	LI R2,_MSG6-MSG6	;
+     6824 0010     
+0686 6826 0420  54 	BLWP @VMBW
+     6828 6B7C     
+0687 682A 045B  20 	B *R11
+0688               
+0689               *** Display DSKx.xxx and Disk names
+0690               DSPDSK
+0691 682C C30B  18 	MOV R11,R12		;Save return
+0692 682E 0200  20 	LI R0,ROW2+1		;DSKX.
+     6830 0041     
+0693 6832 0201  20 	LI R1,MSG4
+     6834 6057     
+0694 6836 0202  20 	LI R2,_MSG4-MSG4	;
+     6838 001E     
+0695 683A 0420  54 	BLWP @VMBW
+     683C 6B7C     
+0696               
+0697 683E 0204  20 	LI R4,3		;3 drives
+     6840 0003     
+0698 6842 0205  20 	LI R5,DSKNUM
+     6844 27FD     
+0699 6846 0200  20 	LI R0,ROW2+6
+     6848 0046     
+0700               LP06
+0701 684A D255  26 	MOVB *R5,R9		;Get disk number for drive x
+0702 684C 0989  56 	SRL R9,8		;make byte a word
+0703 684E 0201  20 	LI R1,BUFF1
+     6850 2720     
+0704 6852 06A0  32 	BL @CV2ASC
+     6854 6886     
+0705 6856 0201  20 	LI R1,BUFF1+1	;Skip 1st leading 0
+     6858 2721     
+0706 685A 0202  20 	LI R2,3		;Only put 3 digits on screen
+     685C 0003     
+0707 685E 0420  54 	BLWP @VMBW		;Put disk number on screen
+     6860 6B7C     
+0708               
+0709 6862 D275  28 	MOVB *R5+,R9		;Get disk number for drive x
+0710 6864 0989  56 	SRL R9,8		;make byte a word
+0711 6866 3A60  72 	MPY @N10,R9		;Point to name location in BUFF2
+     6868 62D8     
+0712 686A 022A  22 	AI R10,BUFF2		; "
+     686C 2800     
+0713 686E C04A  18 	MOV R10,R1
+0714 6870 0220  22 	AI R0,27		;Row below DSKX and back 5 columns
+     6872 001B     
+0715 6874 0202  20 	LI R2,10
+     6876 000A     
+0716 6878 0420  54 	BLWP @VMBW		;Put disk name on screen
+     687A 6B7C     
+0717 687C 0220  22 	AI R0,-17		;Back up to DSKX row advance 10 columns
+     687E FFEF     
+0718 6880 0604  14 	DEC R4
+0719 6882 16E3  14 	JNE LP06
+0720               
+0721 6884 045C  20 	B *R12
+0722               
+0723               *** Convert word to 4 digit ASCII
+0724               *Entry: R9=word to convert,R1 pointing to 8 byte buffer
+0725               *Exit: Buffer=1st 4 bytes string with leading 0s
+0726               *Exit: Buffer=2nd 4 bytes string leading 0s removed
+0727               CV2ASC
+0728 6886 C289  18 	MOV R9,R10
+0729               
+0730 6888 04C9  14 	CLR R9
+0731 688A 3E60 144 	DIV @N1000,R9	;R9 has integer of result,R10 has remainder
+     688C 62DC     
+0732 688E 06C9  14  	SWPB R9
+0733 6890 0269  22 	ORI R9,>3000
+     6892 3000     
+0734 6894 DC49  32 	MOVB R9,*R1+		;Save integer
+0735               
+0736 6896 04C9  14 	CLR R9
+0737 6898 3E60 144 	DIV @N100,R9	;R9 has integer of result,R10 has remainder
+     689A 62DA     
+0738 689C 06C9  14  	SWPB R9
+0739 689E 0269  22 	ORI R9,>3000
+     68A0 3000     
+0740 68A2 DC49  32 	MOVB R9,*R1+		;Save integer
+0741               
+0742 68A4 04C9  14 	CLR R9			;R10 has remainder from previous division
+0743 68A6 3E60 144 	DIV @N10,R9		;R9 has integer of result,R10 has remainder
+     68A8 62D8     
+0744 68AA 06C9  14 	SWPB R9
+0745 68AC 0269  22 	ORI R9,>3000
+     68AE 3000     
+0746 68B0 DC49  32 	MOVB R9,*R1+		;Save integer
+0747               
+0748 68B2 06CA  14 	SWPB R10
+0749 68B4 026A  22 	ORI R10,>3000
+     68B6 3000     
+0750 68B8 DC4A  32 	MOVB R10,*R1+		;Save remainder
+0751               
+0752               *Copy string to buffer+4 & Change leading 0s to space
+0753 68BA C461  46 	MOV @-4(R1),*R1		;Copy 1st 4 bytes to 2nd 4 bytes
+     68BC FFFC     
+0754 68BE C861  54 	MOV @-2(R1),@2(R1)	; "
+     68C0 FFFE     
+     68C2 0002     
+0755 68C4 0209  20 	LI R9,3		;Only 1st 3 0s
+     68C6 0003     
+0756               LP17
+0757 68C8 9460  46 	CB @ASCII0,*R1
+     68CA 62C5     
+0758 68CC 1604  14 	JNE JP09		;Leave at 1st non-zero digit
+0759 68CE DC60  48 	MOVB @SPACE,*R1+
+     68D0 605C     
+0760 68D2 0609  14 	DEC R9
+0761 68D4 16F9  14 	JNE LP17
+0762               JP09
+0763 68D6 045B  20 	B *R11
+0764               
+0765               ****************************************
+0766               *	Transfer volume to PC
+0767               *
+0768               ****************************************
+0769 68D8 C20B  18 XFRSND	MOV R11,R8
+0770 68DA 06A0  32 	BL @CLS			;Clear screen
+     68DC 67F8     
+0771 68DE 0201  20 	LI R1,MSG5
+     68E0 6075     
+0772 68E2 0202  20 	LI R2,_MSG5-MSG5
+     68E4 0010     
+0773 68E6 0203  20 	LI R3,>0100
+     68E8 0100     
+0774 68EA 1008  14 	JMP JP25
+0775               
+0776 68EC C20B  18 XFRRCV	MOV R11,R8
+0777 68EE 06A0  32 	BL @CLS			;Clear screen
+     68F0 67F8     
+0778 68F2 0201  20 	LI R1,MSG6
+     68F4 6085     
+0779 68F6 0202  20 	LI R2,_MSG6-MSG6
+     68F8 0010     
+0780 68FA 04C3  14 	CLR R3
+0781               
+0782 68FC 0200  20 JP25	LI R0,ROW2+2		;Display Sending/Receiving
+     68FE 0042     
+0783 6900 0420  54 	BLWP @VMBW
+     6902 6B7C     
+0784 6904 C247  18 	MOV R7,R9		;Display Volume number
+0785 6906 0201  20 	LI R1,BUFF1
+     6908 2720     
+0786 690A 06A0  32 	BL @CV2ASC
+     690C 6886     
+0787 690E 0201  20 	LI R1,BUFF1+1
+     6910 2721     
+0788 6912 0200  20 	LI R0,ROW2+19
+     6914 0053     
+0789 6916 0202  20 	LI R2,3
+     6918 0003     
+0790 691A 0420  54 	BLWP @VMBW
+     691C 6B7C     
+0791               
+0792 691E C007  18 	MOV R7,R0		;Display volume name
+0793 6920 3820  72 	MPY @N10,R0		;Times ten for location in buffer
+     6922 62D8     
+0794 6924 0221  22 	AI R1,BUFF2		;Point to address in buffer
+     6926 2800     
+0795 6928 0200  20 	LI R0,ROW4+12
+     692A 008C     
+0796 692C 0202  20 	LI R2,10		;Display 10 characters
+     692E 000A     
+0797 6930 0420  54 	BLWP @VMBW
+     6932 6B7C     
+0798               
+0799 6934 020C  20 	LI R12,>1100		;Turn on DSR address space
+     6936 1100     
+0800 6938 1D00  20 	SBO 0
+0801 693A 0200  20 	LI R0,>7800		;Command >87 inverted
+     693C 7800     
+0802 693E D800  38 	MOVB R0,@>5FF8		;Send command
+     6940 5FF8     
+0803 6942 C007  18 	MOV R7,R0
+0804 6944 06C0  14 	SWPB R0
+0805 6946 0540  14 	INV R0
+0806 6948 D800  38 	MOVB R0,@>5FFE		;Send Volume number
+     694A 5FFE     
+0807 694C 0200  20 	LI R0,>0100
+     694E 0100     
+0808 6950 D800  38 	MOVB R0,@>5FFE		;Send Telnet flag
+     6952 5FFE     
+0809 6954 0543  14 	INV R3
+0810 6956 D803  38 	MOVB R3,@>5FFE		;Send Send/Recieve mode
+     6958 5FFE     
+0811               
+0812 695A 0201  20 	LI R1,'. '		;
+     695C 2E20     
+0813 695E 0203  20 LP07	LI R3,738		;Start screen position
+     6960 02E2     
+0814 6962 0263  22 	ORI R3,>4000		;set VDP for write
+     6964 4000     
+0815 6966 06C3  14 	SWPB R3			;Get LSByte 1st
+0816 6968 D803  38 	MOVB R3,@>8C02		;Write LSByte
+     696A 8C02     
+0817 696C 06C3  14 	SWPB R3			;Get MSByte
+0818 696E D803  38 	MOVB R3,@>8C02		;Write MSByte
+     6970 8C02     
+0819               
+0820 6972 0204  20 	LI R4,28
+     6974 001C     
+0821 6976 D801  38 LP09	MOVB R1,@>8C00		;Write '.' or space to screen
+     6978 8C00     
+0822               
+0823 697A 0202  20 	LI R2,1500
+     697C 05DC     
+0824 697E D020  34 LP10	MOVB @>5FF6,R0
+     6980 5FF6     
+0825 6982 0540  14 	INV R0
+0826 6984 2020  38 	COC @H1000,R0
+     6986 62E4     
+0827 6988 1309  14 	JEQ JP26		;Cancel or error
+0828 698A 2020  38 	COC @H8000,R0
+     698C 62E6     
+0829 698E 160B  14 	JNE JP27		;Finished
+0830 6990 0602  14 	DEC R2
+0831 6992 16F5  14 	JNE LP10
+0832 6994 0604  14 	DEC R4
+0833 6996 16EF  14 	JNE LP09
+0834 6998 06C1  14 	SWPB R1
+0835 699A 10E1  14 	JMP LP07
+0836               
+0837 699C 0201  20 JP26	LI R1,MSG9
+     699E 6121     
+0838 69A0 0202  20 	LI R2,_MSG9-MSG9
+     69A2 001B     
+0839 69A4 1004  14 	JMP JP28
+0840               
+0841 69A6 0201  20 JP27	LI R1,MSG10
+     69A8 613C     
+0842 69AA 0202  20 	LI R2,_MSG10-MSG10
+     69AC 0011     
+0843               
+0844 69AE 0200  20 JP28	LI R0,ROW21+2
+     69B0 02A2     
+0845 69B2 0420  54 	BLWP @VMBW
+     69B4 6B7C     
+0846               
+0847 69B6 1E00  20 	SBZ 0			;Turn off DSR address space
+0848 69B8 06A0  32 	BL @ANYKY1
+     69BA 69BE     
+0849 69BC 0458  20 	B *R8
+0850               ***************************************
+0851               * Wait for press any keyboard
+0852               ***************************************
+0853 69BE 0200  20 ANYKY1	LI R0,ROW23+5
+     69C0 02E5     
+0854 69C2 0201  20 	LI R1,MSG11
+     69C4 614D     
+0855 69C6 0202  20 	LI R2,_MSG11-MSG11
+     69C8 0017     
+0856 69CA 0420  54 	BLWP @VMBW
+     69CC 6B7C     
+0857 69CE 0420  54 ANYKY2	BLWP @KSCAN
+     69D0 6B74     
+0858 69D2 D020  34 	MOVB @STATUS,R0
+     69D4 837C     
+0859 69D6 13FB  14 	JEQ ANYKY2
+0860 69D8 045B  20 	B *R11
+0861               ****************************************
+0862               *Print to screen
+0863               *Entry	R0=VDP address,
+0864               *	R1=Pointer to message
+0865               ****************************************
+0866 69DA 0581  14 NEWLIN	INC R1			;Skip cr in message
+0867 69DC 0220  22 	AI R0,32		;LF - Next line
+     69DE 0020     
+0868 69E0 0950  56 	SRL R0,5		;CR - Round to 1st Column
+0869 69E2 0A50  56 	SLA R0,5		;       "
+0870 69E4 0260  22 PRINT	ORI R0,>4000		;set VDP for write
+     69E6 4000     
+0871 69E8 06C0  14 	SWPB R0			;Get LSByte 1st
+0872 69EA D800  38 	MOVB R0,@>8C02		;Write LSByte
+     69EC 8C02     
+0873 69EE 06C0  14 	SWPB R0			;Get MSByte
+0874 69F0 D800  38 	MOVB R0,@>8C02		;Write MSByte
+     69F2 8C02     
+0875 69F4 0240  22 	ANDI R0,>3FFF		;Restore screen address
+     69F6 3FFF     
+0876               
+0877 69F8 9811  46 LP20	CB *R1,@H0D		;Check If cr
+     69FA 62E9     
+0878 69FC 13EE  14 	JEQ NEWLIN		;
+0879 69FE 9811  46 	CB *R1,@H00		;Check If end of message
+     6A00 62E8     
+0880 6A02 1304  14 	JEQ JP29		;
+0881 6A04 D831  48 	MOVB *R1+,@>8C00	;Write to screen
+     6A06 8C00     
+0882 6A08 0580  14 	INC R0
+0883 6A0A 10F6  14 	JMP LP20
+0884 6A0C 045B  20 JP29	B *R11
+0885               ********************************************************************************
+0886               * E/A Utilities
+0887               ********************************************************************************
+0888 6A0E 02E0  18 _KSCAN	LWPI >83E0
+     6A10 83E0     
+0889 6A12 C80B  38        	MOV  R11,@EAREG+22           ;save to old r11
+     6A14 20AA     
+0890 6A16 06A0  32        	BL   @>000E
+     6A18 000E     
+0891 6A1A 02E0  18        	LWPI EAREG
+     6A1C 2094     
+0892 6A1E C80B  38        	MOV  R11,@>83F6              ;restore gpl r11
+     6A20 83F6     
+0893 6A22 0380  18        	RTWP
+0894               
+0895               *Register 0: Address in VDP RAM.
+0896               *Register 1: Most-significant byte contains the value to be written.
+0897 6A24 06A0  32 _VSBW  	BL   @VWR
+     6A26 6A6A     
+0898 6A28 D82D  54        	MOVB @>0002(R13),@>8C00
+     6A2A 0002     
+     6A2C 8C00     
+0899 6A2E 0380  18        	RTWP
+0900               
+0901               *Register 0: Starting address of the buffer in VDP RAM.
+0902               *Register 1: Starting address of the buffer in RAM.
+0903               *Register 2: The number of bytes to be written.
+0904 6A30 06A0  32 _VMBW  	BL   @VWR
+     6A32 6A6A     
+0905 6A34 D831  48 LP80  	MOVB *R1+,@>8C00
+     6A36 8C00     
+0906 6A38 0602  14        	DEC  R2
+0907 6A3A 16FC  14        	JNE  LP80
+0908 6A3C 0380  18        	RTWP
+0909               
+0910               *Register 0: Address in VDP RAM.
+0911               *Register 1: Value is placed in the most-significant byte.
+0912 6A3E 06A0  32 _VSBR  	BL   @VRD
+     6A40 6A70     
+0913 6A42 DB60  54        	MOVB @>8800,@>0002(R13)
+     6A44 8800     
+     6A46 0002     
+0914 6A48 0380  18        	RTWP
+0915               
+0916               *Register 0: Starting address of the buffer in VPP RAM.
+0917               *Register 1: Starting address of the buffer in RAM.
+0918               *Register 2: The number of bytes to be read.
+0919 6A4A 06A0  32 _VMBR  BL   @VRD
+     6A4C 6A70     
+0920 6A4E DC60  48 LP81  	MOVB @>8800,*R1+
+     6A50 8800     
+0921 6A52 0602  14        	DEC  R2
+0922 6A54 16FC  14        	JNE  lp81
+0923 6A56 0380  18        	RTWP
+0924               
+0925               *Register 0: Least-significant byte contains the value to be written.
+0926               *Most-significant byte indicates the VDP Register to be written to.
+0927 6A58 C05D  26 _VWTR  	MOV  *R13,R1
+0928 6A5A D82D  54        	MOVB @>0001(R13),@>8C02
+     6A5C 0001     
+     6A5E 8C02     
+0929 6A60 0261  22        	ORI  R1,>8000
+     6A62 8000     
+0930 6A64 D801  38        	MOVB R1,@>8C02
+     6A66 8C02     
+0931 6A68 0380  18        	RTWP
+0932               
+0933 6A6A 0201  20 VWR	LI   R1,>4000			;vdp write
+     6A6C 4000     
+0934 6A6E 1001  14        	JMP  jp82
+0935 6A70 04C1  14 VRD	CLR  R1 			;vdp read
+0936 6A72 C09D  26 JP82  	MOV  *R13,R2
+0937 6A74 D820  54        	MOVB @EAREG+5,@>8C02
+     6A76 2099     
+     6A78 8C02     
+0938 6A7A E081  18 	SOC  R1,R2
+0939 6A7C D802  38        	MOVB R2,@>8C02
+     6A7E 8C02     
+0940 6A80 C06D  34        	MOV  @>0002(R13),R1           fetch old r1,r2
+     6A82 0002     
+0941 6A84 C0AD  34        	MOV  @>0004(R13),R2
+     6A86 0004     
+0942 6A88 045B  20        	B    *R11
+0943               *
+0944               *-------------------------------------
+0945               * DSRLNK Call DSR or subprogram
+0946               *-------------------------------------
+0947      2032     SAVCRU	EQU >2032
+0948      2034     SAVENT	EQU >2034
+0949      2036     SAVLEN	EQU >2036
+0950      2038     SAVPAB	EQU >2038
+0951      203A     SAVVER	EQU >203A
+0952      208C     NAMBUF	EQU >208C
+0953 6A8A 2E       DOT	TEXT '.'	      ;Used by DSRLNK
+0954 6A8B   20     EQBIT	BYTE >20	      ; "
+0955 6A8C AA       HEADID	BYTE >AA	      ;Could use >6000
+0956               	EVEN
+0957               _DSRLN
+0958 6A8E C17E  30        MOV  *R14+,R5          ;get data word: >0008 = DSR,>000A = subprogram
+0959 6A90 53E0  34        SZCB @EQBIT,R15        ;clear Eq bit
+     6A92 6A8B     
+0960 6A94 C020  34        MOV  @>8356,R0          ;get name ptr
+     6A96 8356     
+0961 6A98 C240  18        MOV  R0,R9
+0962 6A9A 0229  22        AI   R9,-8	      ;point to status/error byte in PAB
+     6A9C FFF8     
+0963 6A9E 0420  54        BLWP @VSBR             ;VSBR: read size
+     6AA0 6B80     
+0964 6AA2 D0C1  18        MOVB R1,R3             ;name size
+0965 6AA4 0983  56        SRL  R3,8              ;make it a word
+0966 6AA6 0704  14        SETO R4                ;character counter
+0967 6AA8 0202  20        LI   R2,NAMBUF         ;name buffer
+     6AAA 208C     
+0968               
+0969 6AAC 0580  14 LP90   INC  R0
+0970 6AAE 0584  14        INC  R4
+0971 6AB0 80C4  18        C    R4,R3             ;whole name done?
+0972 6AB2 1306  14        JEQ  JP90              ;yes
+0973 6AB4 0420  54        BLWP @VSBR             ;no: read a char with VSBR
+     6AB6 6B80     
+0974 6AB8 DC81  32        MOVB R1,*R2+           ;save it on buffer
+0975 6ABA 9801  38        CB   R1,@DOT           ;is it . ?
+     6ABC 6A8A     
+0976 6ABE 16F6  14        JNE  LP90              ;no: next char
+0977               
+0978 6AC0 C104  18 JP90   MOV  R4,R4             ;yes: did we find any char before the dot?
+0979 6AC2 1352  14        JEQ  JP95              ;empty name: error 0
+0980 6AC4 0284  22        CI   R4,>0007          ;check name size
+     6AC6 0007     
+0981 6AC8 154F  14        JGT  JP95              ;8 char or more: error 0
+0982 6ACA 04E0  34        CLR  @>83D0            ;buffer for CRU address
+     6ACC 83D0     
+0983 6ACE C804  38        MOV  R4,@>8354         ;save name size
+     6AD0 8354     
+0984 6AD2 C804  38        MOV  R4,@SAVLEN        ;again for internal use
+     6AD4 2036     
+0985 6AD6 0584  14        INC  R4
+0986 6AD8 A804  38        A    R4,@>8356         ;point at end-of-name
+     6ADA 8356     
+0987 6ADC C820  54        MOV  @>8356,@SAVPAB    ;save for recall
+     6ADE 8356     
+     6AE0 2038     
+0988 6AE2 02E0  18        LWPI >83E0             ;GPL workspace
+     6AE4 83E0     
+0989 6AE6 04C1  14        CLR  R1                ;call counter
+0990 6AE8 020C  20        LI   R12,>0F00         ;CRU
+     6AEA 0F00     
+0991               
+0992 6AEC C30C  18 LP91  MOV  R12,R12            ;first CRU?
+0993 6AEE 1301  14        JEQ  JP91              ;yes: skip
+0994 6AF0 1E00  20        SBZ  0                 ;no: turn previous card off
+0995               
+0996 6AF2 022C  22 JP91  AI   R12,>0100          ;next card
+     6AF4 0100     
+0997 6AF6 04E0  34        CLR  @>83D0            ;reset buffer
+     6AF8 83D0     
+0998 6AFA 028C  22        CI   R12,>2000         ;last card done?
+     6AFC 2000     
+0999 6AFE 1332  14        JEQ  JP94              ;yes: error 0
+1000 6B00 C80C  38        MOV  R12,@>83D0        ;save current CRU
+     6B02 83D0     
+1001 6B04 1D00  20        SBO  0                 ;turn card on (if any)
+1002 6B06 0202  20        LI   R2,>4000
+     6B08 4000     
+1003 6B0A 9812  46        CB   *R2,@HEADID       ;check if valid header (>AA)
+     6B0C 6A8C     
+1004 6B0E 16EE  14        JNE  LP91              ;no: next card
+1005 6B10 A0A0  34        A    @DSRREG+10,R2    ;yes: get first link (sub or DSR)
+     6B12 20A4     
+1006 6B14 1003  14        JMP  JP92
+1007               
+1008 6B16 C0A0  34 LP92  MOV  @>83D2,R2	      ;address of 'next link' word
+     6B18 83D2     
+1009 6B1A 1D00  20        SBO   0                ;make sure card is on
+1010               
+1011 6B1C C092  26 JP92  MOV  *R2,R2             ;next link
+1012 6B1E 13E6  14        JEQ  LP91              ;no more: next card
+1013 6B20 C802  38        MOV  R2,@>83D2         ;save address (ptr to next link)
+     6B22 83D2     
+1014 6B24 05C2  14        INCT R2
+1015 6B26 C272  30        MOV  *R2+,R9           ;program address
+1016 6B28 D160  34        MOVB @>8355,R5         ;name size
+     6B2A 8355     
+1017 6B2C 1309  14        JEQ  JP93              ;no name: execute
+1018 6B2E 9C85  32        CB   R5,*R2+           ;same size?
+1019 6B30 16F2  14        JNE  LP92              ;no: next link
+1020 6B32 0985  56        SRL  R5,8              ;yes: make it a word
+1021 6B34 0206  20        LI   R6,NAMBUF         ;name buffer
+     6B36 208C     
+1022               
+1023 6B38 9CB6  42 LP93  CB   *R6+,*R2+          ;check name
+1024 6B3A 16ED  14        JNE  LP92              ;mismatch: next link
+1025 6B3C 0605  14        DEC  R5
+1026 6B3E 16FC  14        JNE  LP93              ;next char
+1027               
+1028 6B40 0581  14 JP93  INC  R1                 ;occurences counter
+1029 6B42 C801  38        MOV  R1,@SAVVER        ;save it for recall
+     6B44 203A     
+1030 6B46 C809  38        MOV  R9,@SAVENT        ;save program address
+     6B48 2034     
+1031 6B4A C80C  38        MOV  R12,@SAVCRU       ;save CRU
+     6B4C 2032     
+1032 6B4E 0699  24        BL   *R9               ;call DSR/subprogram
+1033 6B50 10E2  14        JMP  LP92              ;keep scanning
+1034 6B52 1E00  20        SBZ  0                 ;done: turn card off
+1035 6B54 02E0  18        LWPI DSRREG            ;DSRLNK workspace
+     6B56 209A     
+1036 6B58 C009  18        MOV  R9,R0              ;status/error byte in PAB
+1037 6B5A 0420  54        BLWP @VSBR             ;VSBR: read it
+     6B5C 6B80     
+1038 6B5E 09D1  56        SRL  R1,13             ;keep only error bits
+1039 6B60 1604  14        JNE  JP96              ;error
+1040 6B62 0380  18        RTWP                   ;no error: return to caller
+1041               
+1042 6B64 02E0  18 JP94  LWPI DSRREG            ;back to DSRLNK workspace
+     6B66 209A     
+1043 6B68 04C1  14 JP95  CLR  R1                 ;error #0
+1044 6B6A 06C1  14 JP96  SWPB R1
+1045 6B6C D741  30        MOVB R1,*R13           ;pass error code in caller's R0
+1046 6B6E F3E0  34        SOCB @EQBIT,R15        ;set eq bit
+     6B70 6A8B     
+1047 6B72 0380  18        RTWP                   ;return to caller
+1048               
+1049               *********************************
+1050 6B74 2094     KSCAN	DATA EAREG,_KSCAN
+     6B76 6A0E     
+1051 6B78 2094     VSBW	DATA EAREG,_VSBW
+     6B7A 6A24     
+1052 6B7C 2094     VMBW	DATA EAREG,_VMBW
+     6B7E 6A30     
+1053 6B80 2094     VSBR	DATA EAREG,_VSBR
+     6B82 6A3E     
+1054 6B84 2094     VMBR	DATA EAREG,_VMBR
+     6B86 6A4A     
+1055 6B88 2094     VWTR	DATA EAREG,_VWTR
+     6B8A 6A58     
+1056 6B8C 209A     DSRLNK	DATA DSRREG,_DSRLN
+     6B8E 6A8E     
+1057               
+1058      0000     ROW0	EQU >0000
+1059      0020     ROW1	EQU >0020
+1060      0040     ROW2	EQU >0040
+1061      0060     ROW3	EQU >0060
+1062      0080     ROW4	EQU >0080
+1063      00A0     ROW5	EQU >00A0
+1064      00C0     ROW6	EQU >00C0
+1065      00E0     ROW7	EQU >00E0
+1066      0100     ROW8	EQU >0100
+1067      0120     ROW9	EQU >0120
+1068      0140     ROW10	EQU >0140
+1069      0160     ROW11	EQU >0160
+1070      0180     ROW12	EQU >0180
+1071      01A0     ROW13	EQU >01A0
+1072      01C0     ROW14	EQU >01C0
+1073      01E0     ROW15	EQU >01E0
+1074      0200     ROW16	EQU >0200
+1075      0220     ROW17	EQU >0220
+1076      0240     ROW18	EQU >0240
+1077      0260     ROW19	EQU >0260
+1078      0280     ROW20	EQU >0280
+1079      02A0     ROW21	EQU >02A0
+1080      02C0     ROW22	EQU >02C0
+1081      02E0     ROW23	EQU >02E0
+1082                END
