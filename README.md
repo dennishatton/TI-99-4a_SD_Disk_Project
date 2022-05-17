@@ -5,7 +5,7 @@ Allows TI to use floppy images on SD card
 Note:<br />
 	If you have downloaded the PCBs, Please update 5/17/22<br /><br />
 
-	I have also uploaded 32K board, RS232 board and ESP-01 adaptor for Telnet transfers<br />
+	I have also uploaded 32K board, RS232/PIO board and ESP-01 adaptor for Telnet transfers<br />
 	<br />
 	If you have already order the old PCBs as I have.<br />
 	You will need the adaptor board. See the Adaptor ReadMe.pdf in KiCad folder.<br />
