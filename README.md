@@ -7,6 +7,8 @@ Note:<br />
 
 	I have also uploaded 32K board, RS232/PIO board and ESP-01 adaptor for Telnet transfers<br />
 	<br />
+	I'm not trying to re-invent TI-99/4a or turn it into a PC.<br />
+	My goal is to keep it compatible with an original TI system.<br />
 	If you have already order the old PCBs as I have.<br />
 	You will need the adaptor board. See the Adaptor ReadMe.pdf in KiCad folder.<br />
 	The pin header will also be used for the optional 32K daughter board.<br />
