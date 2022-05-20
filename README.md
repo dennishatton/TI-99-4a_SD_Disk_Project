@@ -12,6 +12,7 @@ Note:<br />
 	If you have already order the old PCBs as I have.<br />
 	You will need the adaptor board. See the Adaptor ReadMe.pdf in KiCad folder.<br />
 	The pin header will also be used for the optional 32K daughter board.<br />
+	I recommend you use a long pin wire wrap edge card connector for side port, If you want to mount in a case.<br />
 	<br />	
 	This should go without saying but the edge card connector goes on back of the board, Not front components side.<br />
 	Also If you can't figure out where the emitter, base & collector is on a transistor. This project is not for you.<br />
