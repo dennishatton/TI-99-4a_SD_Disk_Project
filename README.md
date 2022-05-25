@@ -3,7 +3,7 @@ Allows TI to use floppy images on SD card
 <br />
 <br />
 Note:<br />
-	If you have downloaded the PCBs, Please update 5/17/22<br /><br />
+	Added optional LED to 32K board 5/25/22<br /><br />
 
 	I have also uploaded 32K board, RS232/PIO board and ESP-01 adaptor for Telnet transfers<br />
 	<br />
@@ -53,7 +53,6 @@ The baud is 115.2k 8N1.<br />
 ![20210210_215252-ConvertImage](https://user-images.githubusercontent.com/6753466/107654000-d8295f80-6c47-11eb-8724-41792cc1835e.jpg)
 
 ![20210210_215518-ConvertImage](https://user-images.githubusercontent.com/6753466/107654174-0313b380-6c48-11eb-8869-f22a397665a8.jpg)
-![20220517_162552](https://user-images.githubusercontent.com/6753466/168922685-4b889890-207c-45b6-8742-5c7b9b2f0e74.jpg)
 ![20220517_162338](https://user-images.githubusercontent.com/6753466/168922696-897ccd0c-7b33-4925-9729-05f90aae67c3.jpg)
 ![20220517_162359](https://user-images.githubusercontent.com/6753466/168922706-d60dbe1b-8071-4687-9492-6ff588b4eeda.jpg)
 ![20220517_162436](https://user-images.githubusercontent.com/6753466/168922715-f000a3a5-55d0-4d39-a41b-d1926b3e4fd6.jpg)
