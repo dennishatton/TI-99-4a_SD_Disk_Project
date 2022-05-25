@@ -58,12 +58,12 @@ The baud is 115.2k 8N1.<br />
 ![RS232Front](https://user-images.githubusercontent.com/6753466/170385157-a1ae4dae-aca4-40f6-b0ba-a97418f05ad7.jpg)
 ![RS232Back](https://user-images.githubusercontent.com/6753466/170385183-7e2a265d-ba2d-4571-b4ab-a3838b95cb57.jpg)
 ![RS232Test](https://user-images.githubusercontent.com/6753466/170385251-ecc8b067-6b48-4101-a602-6b5ccba13977.jpg)
-32K Memory test.
+RS232 test with my EPROM programmer.
 
 ![32KFront](https://user-images.githubusercontent.com/6753466/170385277-1d3e4d23-2535-4788-9d59-5e41630f1e7f.jpg)
 ![32KBack](https://user-images.githubusercontent.com/6753466/170385330-92a88344-faf3-4186-8be0-442de668cd32.jpg)
 ![32KTest](https://user-images.githubusercontent.com/6753466/170385347-df5e4ec9-c7d2-4b8b-b01b-8a38bdbc6fa9.jpg)
-RS232 test with my EPROM programmer.
+32K Memory test.
 
 ![flat](https://user-images.githubusercontent.com/6753466/170385386-dd5b3b63-0bef-4345-ada1-49e55a1afe5a.jpg)
 ![Upright](https://user-images.githubusercontent.com/6753466/170385400-cbff3c3e-c67e-442b-950f-4775f3b8f58e.jpg)
