@@ -75,6 +75,6 @@ Attached with Velcro.<br />
 TI Sending Volume to PC via Telnet Xmodem
 
 ![PC_Telnet](https://user-images.githubusercontent.com/6753466/170412728-b391a19d-4436-4d80-b0a1-7085718cf3c1.jpg)
-PC Receiving Volume from TI via Telnet Xmodem
+PC Receiving Volume from TI via Telnet Xmodem 1.8 KB/Sec
 
 
