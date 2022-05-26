@@ -70,3 +70,11 @@ RS232 test with my EPROM programmer.<br />
 ![flat](https://user-images.githubusercontent.com/6753466/170385386-dd5b3b63-0bef-4345-ada1-49e55a1afe5a.jpg)
 ![Upright](https://user-images.githubusercontent.com/6753466/170385400-cbff3c3e-c67e-442b-950f-4775f3b8f58e.jpg)
 Attached with Velcro.<br />
+
+![TI_Telnet](https://user-images.githubusercontent.com/6753466/170412623-5f40a246-60f6-41b0-a636-38ab1d46b639.jpg)
+TI Sending Volume to PC via Telnet Xmodem
+
+![PC_Telnet](https://user-images.githubusercontent.com/6753466/170412728-b391a19d-4436-4d80-b0a1-7085718cf3c1.jpg)
+PC Receiving Volume from TI via Telnet Xmodem
+
+
