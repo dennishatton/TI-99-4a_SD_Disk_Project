@@ -50,21 +50,23 @@ by writing to the FDC Command register and reading or writing data registers.<br
 There is a 128 byte buffer storing status & char received. (64 chars)<br />
 The baud is 115.2k 8N1.<br />
 
-![20210210_215252-ConvertImage](https://user-images.githubusercontent.com/6753466/107654000-d8295f80-6c47-11eb-8724-41792cc1835e.jpg)
-![20210210_215518-ConvertImage](https://user-images.githubusercontent.com/6753466/107654174-0313b380-6c48-11eb-8869-f22a397665a8.jpg)
+![VOLMGR](https://user-images.githubusercontent.com/6753466/170409919-f03c4be6-b2cd-4ad9-8e55-f5db8eb0c81e.jpg)
+Volume Manger.<br />
 ![20220517_162338](https://user-images.githubusercontent.com/6753466/168922696-897ccd0c-7b33-4925-9729-05f90aae67c3.jpg)
 ![20220517_162359](https://user-images.githubusercontent.com/6753466/168922706-d60dbe1b-8071-4687-9492-6ff588b4eeda.jpg)
+![DiskTest](https://user-images.githubusercontent.com/6753466/170410018-41deb22a-349a-4567-8553-665e0abd1e83.jpg)
+Disk test with TI Disk Manager.<br />
 
 ![RS232Front](https://user-images.githubusercontent.com/6753466/170385157-a1ae4dae-aca4-40f6-b0ba-a97418f05ad7.jpg)
 ![RS232Back](https://user-images.githubusercontent.com/6753466/170385183-7e2a265d-ba2d-4571-b4ab-a3838b95cb57.jpg)
 ![RS232Test](https://user-images.githubusercontent.com/6753466/170385251-ecc8b067-6b48-4101-a602-6b5ccba13977.jpg)
-RS232 test with my EPROM programmer.
+RS232 test with my EPROM programmer.<br />
 
 ![32KFront](https://user-images.githubusercontent.com/6753466/170385277-1d3e4d23-2535-4788-9d59-5e41630f1e7f.jpg)
 ![32KBack](https://user-images.githubusercontent.com/6753466/170385330-92a88344-faf3-4186-8be0-442de668cd32.jpg)
 ![32KTest](https://user-images.githubusercontent.com/6753466/170385347-df5e4ec9-c7d2-4b8b-b01b-8a38bdbc6fa9.jpg)
-32K Memory test.
+32K Memory test.<br />
 
 ![flat](https://user-images.githubusercontent.com/6753466/170385386-dd5b3b63-0bef-4345-ada1-49e55a1afe5a.jpg)
 ![Upright](https://user-images.githubusercontent.com/6753466/170385400-cbff3c3e-c67e-442b-950f-4775f3b8f58e.jpg)
-Attached with Velcro.
+Attached with Velcro.<br />
