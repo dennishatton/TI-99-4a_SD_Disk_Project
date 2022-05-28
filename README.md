@@ -19,37 +19,37 @@ Note:
 	Must power up SD drive first then console.
 	
 
-I built this on a wire wrap board and tested.</br>
-I have included the KICAD schematic and PCB.</br>
-You must format SD card to EXFAT allocation unit size 512k.</br>
-The reason I use 512k clusters is make sure another file can't be save between volumes.</br>
-You will need to find a TI DSR rom. I'm not including one.</br>
-You can use TI DSR rom as is or apply patches for CALL MOUNT and 360k disk images</br>
-I'm using an ATMEGA162 to interface with the TI. Source included for MPLABX</br>
-The volumes are V9T9 sector images of TI disk.</br>
-You can use Disk Manager 2 on TI or on PC use TI99DIR.</br>
-I'm also including some PC utilties.</br>
-To use the PC utilities, You will need Visual C++ Redistributable for Visual Studio 2019.</br>
-Go here to download for your computer.</br>
-https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads</br>
-There is a cartridge VolumeMgr.bin to list volumes on the TI.</br>
-The cartridge is optional, You will need FLASHROM99 to run it.</br>
-</br>
-If someone does build this, Please let me know.</br>
-I have mine working for a couple years.</br>
-dennishsr@charter.net</br>
-</br>
-You must use a 16MHz Atmega162</br>
-Low High Extend</br>
-with fuses FF D9 FF</br>
-</br>
-Can use ESP-01 adaptor to Telnet send/receive volumes from PC to SD Drive.</br>
-Also allowed the TI to access the ATmega usart</br>
-by writing to the FDC Command register and reading or writing data registers.</br>
-0x83 read usart status, 0x84 read usart data, 0x85 write usart data.</br>
-There is a 128 byte buffer storing status & char received. (64 chars)</br>
-The baud is 115.2k 8N1.</br>
-</br>
+I built this on a wire wrap board and tested.<br />
+I have included the KICAD schematic and PCB.<br />
+You must format SD card to EXFAT allocation unit size 512k.<br />
+The reason I use 512k clusters is make sure another file can't be save between volumes.<br />
+You will need to find a TI DSR rom. I'm not including one.<br />
+You can use TI DSR rom as is or apply patches for CALL MOUNT and 360k disk images<br />
+I'm using an ATMEGA162 to interface with the TI. Source included for MPLABX<br />
+The volumes are V9T9 sector images of TI disk.<br />
+You can use Disk Manager 2 on TI or on PC use TI99DIR.<br />
+I'm also including some PC utilties.<br />
+To use the PC utilities, You will need Visual C++ Redistributable for Visual Studio 2019.<br />
+Go here to download for your computer.<br />
+https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads<br />
+There is a cartridge VolumeMgr.bin to list volumes on the TI.<br />
+The cartridge is optional, You will need FLASHROM99 to run it.<br />
+<br />
+If someone does build this, Please let me know.<br />
+I have mine working for a couple years.<br />
+dennishsr@charter.net<br />
+<br />
+You must use a 16MHz Atmega162<br />
+Low High Extend<br />
+with fuses FF D9 FF<br />
+<br />
+Can use ESP-01 adaptor to Telnet send/receive volumes from PC to SD Drive.<br />
+Also allowed the TI to access the ATmega usart<br />
+by writing to the FDC Command register and reading or writing data registers.<br />
+0x83 read usart status, 0x84 read usart data, 0x85 write usart data.<br />
+There is a 128 byte buffer storing status & char received. (64 chars)<br />
+The baud is 115.2k 8N1.<br />
+<br />
 ![VOLMGR](https://user-images.githubusercontent.com/6753466/170409919-f03c4be6-b2cd-4ad9-8e55-f5db8eb0c81e.jpg)
 Volume Manger.
 ![20220517_162338](https://user-images.githubusercontent.com/6753466/168922696-897ccd0c-7b33-4925-9729-05f90aae67c3.jpg)
