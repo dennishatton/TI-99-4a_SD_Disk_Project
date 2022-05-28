@@ -3,7 +3,7 @@ Allows TI to use floppy images on SD card
 
 
 Note:
-	Added Volume Manger EA5 to load into memory 5/27/22
+	Added Volume Manager EA5 to load into memory 5/27/22
 
 	I have also uploaded 32K board, RS232/PIO board and ESP-01 adaptor for Telnet transfers
 	
