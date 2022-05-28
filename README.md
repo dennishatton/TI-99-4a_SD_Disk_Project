@@ -3,7 +3,7 @@ Allows TI to use floppy images on SD card
 <br />
 <br />
 Note:<br />
-	Added optional LED to 32K board 5/25/22<br /><br />
+	Added Volume Manger EA5 to load into memory 5/27/22<br /><br />
 
 	I have also uploaded 32K board, RS232/PIO board and ESP-01 adaptor for Telnet transfers<br />
 	<br />
