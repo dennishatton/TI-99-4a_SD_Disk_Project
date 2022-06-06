@@ -3,7 +3,7 @@ Allows TI to use floppy images on SD card
 
 
 Note:<br />	
-	6/6/22 	SD_Drive PCB removed 5v from pin 26 of 27C64 and tied to pin 7 of 74LS259,<br />
+	6/6/22 	SD_Drive PCB removed 5v from pin 26 of 27C128 and tied to pin 7 of 74LS259,<br />
 	To allow optional 16k rom with CALL VOLMGR in DSR.<br />
 	5/27/22 Added Volume Manager EA5 to load into memory<br />
 
