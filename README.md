@@ -2,8 +2,9 @@
 Allows TI to use floppy images on SD card
 
 
-Note:
-	Added Volume Manager EA5 to load into memory 5/27/22
+Note:	6/6/22 	SD_Drive PCB removed 5v from pin 26 of 27C64 and tied to pin 7 of 74LS259,
+		To allow optional 16k rom with CALL VOLMGR in DSR.
+	5/27/22 Added Volume Manager EA5 to load into memory
 
 	I have also uploaded 32K board, RS232/PIO board and ESP-01 adaptor for Telnet transfers
 	
