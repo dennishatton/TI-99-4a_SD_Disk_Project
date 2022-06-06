@@ -50,8 +50,9 @@ by writing to the FDC Command register and reading or writing data registers.<br
 There is a 128 byte buffer storing status & char received. (64 chars)<br />
 The baud is 115.2k 8N1.<br />
 <br />
-![VOLMGR](https://user-images.githubusercontent.com/6753466/170409919-f03c4be6-b2cd-4ad9-8e55-f5db8eb0c81e.jpg)
+![volmgr](https://user-images.githubusercontent.com/6753466/172210977-dc189824-7271-44d7-83ed-224a2853a5b5.jpg)
 Volume Manger.
+
 ![20220517_162338](https://user-images.githubusercontent.com/6753466/168922696-897ccd0c-7b33-4925-9729-05f90aae67c3.jpg)
 ![20220517_162359](https://user-images.githubusercontent.com/6753466/168922706-d60dbe1b-8071-4687-9492-6ff588b4eeda.jpg)
 ![DiskTest](https://user-images.githubusercontent.com/6753466/170410018-41deb22a-349a-4567-8553-665e0abd1e83.jpg)
