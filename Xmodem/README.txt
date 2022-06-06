@@ -2,6 +2,7 @@ Transfer disk between PC & TI using an ESP-01 with ESP-LINK firmare.
 On PC side use ExtraPuTTY or Tera Term to transfer by Telnet.
 On TI side use Xmodem program on this disk.
 
+(Instead of below, Use VolMgr F5 to send & F6 to receive)
 Load basic program XFR2. It will load XMDXFR2 object code.
 It runs in XB, EA, or MM.
 I'm using XFR2 now as it runs in ATMEGA162 and transfers directly to SD
