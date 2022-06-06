@@ -1,0 +1,9 @@
+You can stay with the 8k ROM or optional use the 16k ROM with CALL VOLMGR in DSR.
+
+To use the 16k ROM you will need remove 5v from pin 26 of 27c128,
+Then add jumper to pin 7 of 74ls259. (Right now Pin 7 is not connected on the 74ls259)
+
+The new PCB already has this change.
+I have the old PCBs.
+I bent pin 26 up and wire wrapped to the 74ls259.
+See 27c128 jumper.jpg
