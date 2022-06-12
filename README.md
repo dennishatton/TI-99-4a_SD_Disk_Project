@@ -3,6 +3,11 @@ Allows TI to use floppy images on SD card
 
 
 Note:<br />	
+	6/12/22 16k Patch.zip: Change to load VolMgr from Volume 255, to allow updates to VolMgr<br />
+	volmgr.zip: Added auto repeat on keys, Added FCTN-4 Cancel to transfer<br />
+	SD_Drive_540.zip: Fixed transfer to only send size of volume instead of always 360k, Added monitor DSR pin for user cancel of transfer, 	Included avrasm2<br />
+	SD_Drive.zip: Tied DSR_EN 74LS259 Pin 4 to Atmega PD2 pin 12 to monitor User cancel of transfer.<br />	
+
 	6/6/22 	SD_Drive PCB removed 5v from pin 26 of 27C128 and tied to pin 7 of 74LS259,<br />
 	To allow optional 16k rom with CALL VOLMGR in DSR.<br />
 	5/27/22 Added Volume Manager EA5 to load into memory<br />
