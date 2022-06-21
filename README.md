@@ -4,7 +4,7 @@ Allows TI to use floppy images on SD card
 
 Note:<br />
 
-	6/12/22
+	6/20/22
 	TI99_DSR_patches:
 	16k Patch.zip Added CALL CAT
 	System:
