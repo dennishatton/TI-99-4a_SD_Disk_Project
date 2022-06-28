@@ -4,6 +4,8 @@ Allows TI to use floppy images on SD card
 
 Note:<br />
 
+	6/27/22
+	VOLMGR.ZIP highlighted volume number and fixed minor bugs
 	6/25/22
 	VolMgr.zip Added disk rename and quick format.
 	Changed SYSTEM volume to 90k, Allows faster transf
