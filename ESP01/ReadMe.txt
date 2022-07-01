@@ -95,7 +95,7 @@ Click off
 [uC Console]
 A terminal window
 
-or use PuTTY
+Use ExtraPuTTY or Tera Term to send/receive volumes
 Host Name (or IP address)       Port
 192.168.4.1                     23      (or IP address on your network)
 Connection tpye:
