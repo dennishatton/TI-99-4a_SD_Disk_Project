@@ -4,6 +4,13 @@ Allows TI to use floppy images on SD card
 
 Note:<br />
 
+	6/30/22
+	16k patch.zip: Added CALL MAP To See which volumes are mounted to drives
+	SD_Drive_540.zip Updated for CALL MAP
+	MAP.zip
+	I orignally use a 74ls541 as buffer and have two boards one with 74ls540
+	Thinking it would be faster, But makes no difference.
+	If you would like a copy of SD_Drive_541.zip Email me.
 	6/27/22
 	VOLMGR.ZIP highlighted volume number and fixed minor bugs
 	6/25/22
