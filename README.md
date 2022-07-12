@@ -4,6 +4,9 @@ Allows TI to use floppy images on SD card
 
 Note:<br />
 
+	7/11/22
+	Added DSK.volume#.filename to allow access to all volumes without being mounted.
+	Added CALL CATALOG or CALL CAT due to conflict with RBX CALL CAT
 	6/30/22
 	16k patch.zip: Added CALL MAP To See which volumes are mounted to drives
 	SD_Drive_540.zip Updated for CALL MAP
